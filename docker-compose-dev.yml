@@ -1,0 +1,27 @@
+version: '3.7'
+services:
+  postgres:
+    image: postgres:13
+    container_name: postgres_db
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_DB: sukkai
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  dbeaver:
+    image: dbeaver/cloudbeaver:latest
+    container_name: dbeaver
+    ports:
+      - '8978:8978'
+    environment:
+      - CB_ADMIN_NAME=dev
+      - CB_ADMIN_PASSWORD=dev
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:

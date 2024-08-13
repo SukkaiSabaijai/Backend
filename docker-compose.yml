@@ -6,9 +6,9 @@ services:
     ports:
       - '5432:5432'
     environment:
-      POSTGRES_DB: sukkai
-      POSTGRES_USER: dev
-      POSTGRES_PASSWORD: dev
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DATABASE}
     volumes:
       - postgres_data:/var/lib/postgresql/data
 

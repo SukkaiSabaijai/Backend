@@ -1,26 +1,43 @@
+import { User } from './entities/user.entity';
 import { Injectable } from '@nestjs/common';
+import { GetUserDto } from './dto/get-user-dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User>,
+  ) { }
+
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    const newUser = await this.usersRepository.create(createUserDto);
+    return this.usersRepository.save(newUser);
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll(): Promise<GetUserDto[]> {
+    const users = await this.usersRepository.find();
+    return plainToInstance(GetUserDto, users, { excludeExtraneousValues: true });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number): Promise<GetUserDto> {
+    const user = await this.usersRepository.findOneBy({ id });
+    if (!user) {
+      throw new Error(`User with ID #${id} not found`);
+    }
+    return plainToInstance(GetUserDto, user, { excludeExtraneousValues: true });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+    const user = await this.usersRepository.findOneBy({ id });
+    if (!user) {
+      throw new Error(`User with ID #${id} not found`);
+    }
+    Object.assign(user, updateUserDto);
+    return this.usersRepository.save(user);
   }
 }

@@ -9,17 +9,17 @@ import { userID } from './dto/responses/user-id.dto';
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User) private userRepository: Repository<User>
+    @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
     const newUser = this.userRepository.create({
-      ...createUserDto
+      ...createUserDto,
     });
     const userDetail = await this.userRepository.save(newUser);
-    const newUserID = new userID()
-    newUserID.id = userDetail.id
-    return newUserID
+    const newUserID = new userID();
+    newUserID.id = userDetail.id;
+    return newUserID;
   }
 
   findAll() {

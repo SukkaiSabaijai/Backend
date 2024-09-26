@@ -9,8 +9,10 @@ import { MarkerPic } from './entities/marker_pics.entity';
 import { Grid } from './entities/grid.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User,Marker,Category,MarkerPic,Grid])],
+  imports: [
+    TypeOrmModule.forFeature([User, Marker, Category, MarkerPic, Grid]),
+  ],
   controllers: [MarkersController],
-  providers: [MarkersService]
+  providers: [MarkersService],
 })
 export class MarkersModule {}

@@ -1,3 +1,3 @@
-export class userID{
-    id: number;
+export class userID {
+  id: number;
 }

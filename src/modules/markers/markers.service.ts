@@ -9,11 +9,13 @@ import { Grid } from './entities/grid.entity';
 
 @Injectable()
 export class MarkersService {
-    constructor(
-        @InjectRepository(User) private userRepository: Repository<User>,
-        @InjectRepository(Marker) private markerRepository: Repository<Marker>,
-        @InjectRepository(Category) private categoryRepository: Repository<Category>,
-        @InjectRepository(MarkerPic) private markerpicRepository: Repository<MarkerPic>,
-        @InjectRepository(Grid) private gridRepository: Repository<Grid>
-    ) {}
+  constructor(
+    @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(Marker) private markerRepository: Repository<Marker>,
+    @InjectRepository(Category)
+    private categoryRepository: Repository<Category>,
+    @InjectRepository(MarkerPic)
+    private markerpicRepository: Repository<MarkerPic>,
+    @InjectRepository(Grid) private gridRepository: Repository<Grid>,
+  ) {}
 }

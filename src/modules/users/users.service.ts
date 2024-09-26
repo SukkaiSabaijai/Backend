@@ -9,7 +9,7 @@ import { userID } from './dto/responses/user-id.dto';
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(User) private userRepository: Repository<User>
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -20,21 +20,5 @@ export class UsersService {
     const newUserID = new userID();
     newUserID.id = userDetail.id;
     return newUserID;
-  }
-
-  findAll() {
-    return `This action returns all users`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
   }
 }

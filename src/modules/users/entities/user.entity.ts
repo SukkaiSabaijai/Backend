@@ -8,7 +8,7 @@ export class User {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column({ unique: true})
+    @Column({ unique: true })
     username: string
 
     @Column()
@@ -16,14 +16,14 @@ export class User {
 
     @Column()
     email: string
-    
-    @Column({ type: 'date', nullable: true})
+
+    @Column({ type: 'date', nullable: true })
     date_of_birth: Date
 
-    @Column({ nullable: true})
+    @Column({ nullable: true })
     gender: string
 
-    @Column({ nullable: true})
+    @Column({ nullable: true })
     user_pic: string
 
     @OneToMany(() => Marker, (marker) => marker.created_by)
@@ -34,4 +34,7 @@ export class User {
 
     @OneToMany(() => Bookmark, (bookmark) => bookmark.user_id)
     bookmarks: Bookmark[]
+
+    @Column({ nullable: true })
+    refreshToken?: string;
 }

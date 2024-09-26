@@ -4,7 +4,6 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { MarkersModule } from './modules/markers/markers.module';
-import { UsersModule } from './modules/users/users.module';
 import { User } from './modules/users/entities/user.entity';
 import { Marker } from './modules/markers/entities/marker.entity';
 import { ReviewsModule } from './modules/reviews/reviews.module';
@@ -14,10 +13,12 @@ import { Bookmark } from './modules/bookmarks/entities/bookmark.entity';
 import { Grid } from './modules/markers/entities/grid.entity';
 import { Category } from './modules/markers/entities/category.entity';
 import { MarkerPic } from './modules/markers/entities/marker_pics.entity';
+import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.POSTGRES_HOST,
@@ -25,9 +26,10 @@ import { MarkerPic } from './modules/markers/entities/marker_pics.entity';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DATABASE,
-      entities: [User,Marker,Review,Bookmark,Grid,Category,MarkerPic],
+      entities: [User, Marker, Review, Bookmark, Grid, Category, MarkerPic],
       synchronize: true,
     }),
+    AuthModule,
     UsersModule,
     MarkersModule,
     ReviewsModule,
@@ -36,4 +38,4 @@ import { MarkerPic } from './modules/markers/entities/marker_pics.entity';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

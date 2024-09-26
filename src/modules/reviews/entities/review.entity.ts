@@ -1,6 +1,12 @@
 import { Marker } from 'src/modules/markers/entities/marker.entity';
 import { User } from 'src/modules/users/entities/user.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class Review {
@@ -13,8 +19,8 @@ export class Review {
   @ManyToOne(() => Marker, (marker) => marker.reviews)
   marker_id: Marker;
 
-  @Column()
-  date: Date;
+  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
 
   @Column()
   score: number;

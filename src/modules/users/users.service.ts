@@ -10,7 +10,7 @@ import { userID } from './dto/responses/user-id.dto';
 export class UsersService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>
-  ) {}
+  ) { }
 
   async create(createUserDto: CreateUserDto) {
     const newUser = this.userRepository.create({
@@ -31,6 +31,7 @@ export class UsersService {
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
+    console.log("I want to use update naja")
     return `This action updates a #${id} user`;
   }
 

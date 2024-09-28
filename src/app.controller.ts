@@ -15,7 +15,7 @@ import * as path from 'path';
 
 @Controller()
 export class AppController {
-	constructor(private readonly minioService: MinioService) {}
+	constructor(private readonly minioService: MinioService) { }
 
 	@Post('covers')
 	@UseInterceptors(FileInterceptor('file'))
@@ -27,6 +27,10 @@ export class AppController {
 
 		await this.minioService.uploadFile(file, fileName);
 		return fileName;
+	}
+	@Get()
+	getHello(): string {
+		return 'Hello World!';
 	}
 
 	@Get('covers/:fileName')

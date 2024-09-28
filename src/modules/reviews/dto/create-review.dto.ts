@@ -1,5 +1,5 @@
 export class CreateReviewsDto {
-  markerId: number;
-  rating: number;
-  review: number;
+	markerId: number;
+	rating: number;
+	review: number;
 }

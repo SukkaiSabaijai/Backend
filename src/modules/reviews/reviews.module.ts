@@ -6,8 +6,8 @@ import { Review } from './entities/review.entity';
 import { User } from '../users/entities/user.entity';
 import { Marker } from '../markers/entities/marker.entity';
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Review, Marker])],
-  providers: [ReviewsService],
-  controllers: [ReviewsController],
+	imports: [TypeOrmModule.forFeature([User, Review, Marker])],
+	providers: [ReviewsService],
+	controllers: [ReviewsController],
 })
 export class ReviewsModule {}

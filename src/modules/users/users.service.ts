@@ -9,16 +9,16 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
-  ) { }
+  ) {}
 
   async findByUsername(username: string): Promise<User> {
     const user = await this.usersRepository.findOne({ where: { username } });
-    return user
+    return user;
   }
 
   async findById(id: number): Promise<User> {
     const user = await this.usersRepository.findOne({ where: { id } });
-    return user
+    return user;
   }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -26,8 +26,10 @@ export class UsersService {
     return this.usersRepository.save(newUser);
   }
 
-  async updateRefreshToken(user_id: number, refreshToken: string): Promise<void> {
+  async updateRefreshToken(
+    user_id: number,
+    refreshToken: string,
+  ): Promise<void> {
     await this.usersRepository.update(user_id, { refreshToken });
   }
-
 }

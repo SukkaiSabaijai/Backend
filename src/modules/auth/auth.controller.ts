@@ -20,7 +20,7 @@ import { RefreshTokenGuard } from '../../common/refreshToken.guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
   @Post('signup')
   signup(@Body() createUserDto: CreateUserDto) {
     return this.authService.signUp(createUserDto);
@@ -34,7 +34,7 @@ export class AuthController {
   @UseGuards(AccessTokenGuard)
   @Get('logout')
   logout(@Req() req) {
-    console.log(req.user)
+    console.log(req.user);
     this.authService.logout(req.user['sub']);
   }
 

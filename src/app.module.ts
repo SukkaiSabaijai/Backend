@@ -15,6 +15,7 @@ import { Category } from './modules/markers/entities/category.entity';
 import { MarkerPic } from './modules/markers/entities/marker_pics.entity';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { MinioModule } from './modules/minio/minio.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { AuthModule } from './modules/auth/auth.module';
     MarkersModule,
     ReviewsModule,
     BookmarksModule,
+    MinioModule,
   ],
   controllers: [AppController],
   providers: [AppService],

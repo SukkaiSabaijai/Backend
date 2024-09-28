@@ -12,16 +12,21 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  dbeaver:
-    image: dbeaver/cloudbeaver:latest
-    container_name: dbeaver
-    ports:
-      - '8978:8978'
+  minio:
+    image: minio/minio:latest
+    container_name: minio
     environment:
-      - CB_ADMIN_NAME=dev
-      - CB_ADMIN_PASSWORD=dev
-    depends_on:
-      - postgres
+      - MINIO_ROOT_USER=${MINIO_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_PASSWORD}
+    ports:
+      - "9000:9000"
+      - "9001:9001" # MinIO Console
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    restart: always
 
 volumes:
   postgres_data:
+  minio_data:
+    driver: local

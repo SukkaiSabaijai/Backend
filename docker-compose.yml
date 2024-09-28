@@ -28,5 +28,8 @@ services:
 
 volumes:
   postgres_data:
+    labels:
+      - "keep=yes"  # Label to mark the volume for retention
   minio_data:
-    driver: local
+    labels:
+      - "keep=yes"  # Label to mark the volume for retention

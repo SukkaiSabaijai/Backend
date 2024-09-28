@@ -1,6 +1,7 @@
 import {
   IsEmail,
   IsNotEmpty,
+  IsOptional,
   IsString,
   Matches,
   MinLength,
@@ -9,7 +10,8 @@ import {
 export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
-  gender: string;
+  @IsOptional() // Made optional in case not required during creation
+  gender?: string;
 
   @IsString()
   @IsNotEmpty()
@@ -23,4 +25,12 @@ export class CreateUserDto {
     message: 'Password must contain at least one letter and one number',
   })
   password: string;
+
+  @IsEmail({}, { message: 'Invalid email address' })
+  @IsNotEmpty({ message: 'Email is required' })
+  email: string;
+
+  @IsOptional()
+  @IsString()
+  user_pic?: string; // Added optional user picture field
 }

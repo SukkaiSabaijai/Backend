@@ -1,0 +1,24 @@
+# Exclude version control directory
+.git
+
+# Exclude node_modules
+node_modules
+
+# Exclude Docker-related files
+docker-compose.yml
+Dockerfile
+
+# Exclude configuration files
+.prettierrc
+.prettierignore
+.gitignore
+.eslintrc.js
+
+# Exclude documentation
+README.md
+
+# Exclude husky configurations
+.husky
+
+# Exclude GitHub configurations
+.github

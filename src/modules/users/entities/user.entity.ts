@@ -11,11 +11,12 @@ export class User {
 	@Column({ unique: true })
 	username: string;
 
+	@Column({ unique: true })
+	email: string;
+
 	@Column()
 	password: string;
 
-	@Column()
-	email: string;
 
 	@Column({ type: 'date', nullable: true })
 	date_of_birth: Date;

@@ -22,7 +22,7 @@ export class AppController {
 	async uploadBookCover(@UploadedFile() file: Express.Multer.File) {
 		await this.minioService.createBucketIfNotExists();
 		const uniqueId = uuidv4();
-		const folderPath = 'profile/';
+		const folderPath = '/';
 		const fileName = `${folderPath}${uniqueId}${path.extname(file.originalname)}`;
 
 		await this.minioService.uploadFile(file, fileName);

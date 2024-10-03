@@ -29,7 +29,7 @@ export class User {
     @OneToMany(() => Marker, (marker) => marker.created_by)
     markers: Marker[]
 
-    @OneToMany(() => Review, (review) => review.user_id)
+    @OneToMany(() => Review, (review) => review.user)
     reviews: Review[]
 
     @OneToMany(() => Bookmark, (bookmark) => bookmark.user_id)

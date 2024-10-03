@@ -28,14 +28,17 @@ export class ReviewsController {
     return this.reviewsService.createReview(userId, createReviewsDto);
   }
 
+  @Get('marker/:markerId/reviews')
+  async getReviewsForMarker(
+    @Param('markerId') markerId: number,
+  ): Promise<Review[]> {
+    return this.reviewsService.getReviewsByMarkerId(markerId);
+  }
 
   // Delete /reviews/delete/:id
   @UseGuards(AccessTokenGuard)
   @Delete('delete/:id')
-  async deleteReview(
-    @Param('id') reviewId: number,
-    @Req() req,
-  ): Promise<void> {
+  async deleteReview(@Param('id') reviewId: number, @Req() req): Promise<void> {
     const userId = req.user['sub'];
     return await this.reviewsService.deleteReview(reviewId, userId);
   }

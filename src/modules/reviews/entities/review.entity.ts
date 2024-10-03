@@ -14,17 +14,17 @@ export class Review {
   id: number;
 
   @ManyToOne(() => User, (user) => user.reviews)
-  user_id: User;
+  user: User; // Update field name to 'user'
 
   @ManyToOne(() => Marker, (marker) => marker.reviews)
-  marker_id: Marker;
+  marker: Marker; // Update field name to 'marker'
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
   @Column()
-  score: number;
+  rating: number;
 
   @Column()
-  text: string;
+  review: string;
 }

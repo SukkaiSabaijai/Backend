@@ -41,7 +41,7 @@ export class ReviewsService {
       user: user,
       marker: marker,
       rating: rating,
-      review: review,
+      review: review ?? null,
     });
     return await this.reviewRepository.save(newReview);
   }

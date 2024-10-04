@@ -1,3 +1,4 @@
+import { IsOptional } from 'class-validator';
 import { Marker } from 'src/modules/markers/entities/marker.entity';
 import { User } from 'src/modules/users/entities/user.entity';
 import {
@@ -25,6 +26,6 @@ export class Review {
   @Column()
   rating: number;
 
-  @Column()
-  review: string;
+  @Column({nullable: true})
+  review: string | null;
 }

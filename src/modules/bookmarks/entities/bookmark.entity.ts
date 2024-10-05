@@ -8,10 +8,10 @@ export class Bookmark {
   id: number;
 
   @ManyToOne(() => User, (user) => user.bookmarks)
-  user_id: User;
+  user: User;
 
   @ManyToOne(() => Marker, (marker) => marker.bookmarks)
-  marker_id: Marker;
+  marker: Marker;
 
   @Column()
   short_name: string;

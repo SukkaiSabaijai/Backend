@@ -26,12 +26,15 @@ export class User {
   @Column({ nullable: true })
   user_pic: string;
 
+  @Column({ nullable: true })
+  user_pic: string;
+
   @OneToMany(() => Marker, (marker) => marker.created_by)
   markers: Marker[];
 
-  @OneToMany(() => Review, (review) => review.user_id)
-  reviews: Review[];
-
-  @OneToMany(() => Bookmark, (bookmark) => bookmark.user_id)
+  @OneToMany(() => Bookmark, (bookmark) => bookmark.user.id)
   bookmarks: Bookmark[];
+
+  @Column({ nullable: true })
+  refreshToken?: string;
 }

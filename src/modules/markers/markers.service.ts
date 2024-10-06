@@ -18,4 +18,19 @@ export class MarkersService {
     private markerpicRepository: Repository<MarkerPic>,
     @InjectRepository(Grid) private gridRepository: Repository<Grid>,
   ) {}
+
+  async createMarker(): Promise<Marker> {
+    const newMarker = this.markerRepository.create({
+      latitude: 0,
+      longitude: 1,
+      location_name: 'ECC Building',
+      type: 'Toilet',
+      detail: 'Toilet near the entrance',
+      review_avg_score: 1,
+      review_count: 10,
+    });
+
+    // Save the new marker to the database
+    return await this.markerRepository.save(newMarker);
+  }
 }

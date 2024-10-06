@@ -1,6 +1,13 @@
+import { IsOptional } from 'class-validator';
 import { Marker } from 'src/modules/markers/entities/marker.entity';
 import { User } from 'src/modules/users/entities/user.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class Review {
@@ -8,17 +15,17 @@ export class Review {
   id: number;
 
   @ManyToOne(() => User, (user) => user.reviews)
-  user_id: User;
+  user: User; // Update field name to 'user'
 
   @ManyToOne(() => Marker, (marker) => marker.reviews)
-  marker_id: Marker;
+  marker: Marker; // Update field name to 'marker'
+
+  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
 
   @Column()
-  date: Date;
+  rating: number;
 
-  @Column()
-  score: number;
-
-  @Column()
-  text: string;
+  @Column({nullable: true})
+  review: string | null;
 }

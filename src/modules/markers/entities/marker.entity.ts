@@ -50,12 +50,12 @@ export class Marker {
 	@JoinTable()
 	categories: Category[];
 
-	@OneToMany(() => MarkerPic, (marker_pic) => marker_pic.marker_id)
+	@OneToMany(() => MarkerPic, (marker_pic) => marker_pic.marker)
 	marker_pics: MarkerPic[];
 
-	@OneToMany(() => Review, (review) => review.marker_id)
+	@OneToMany(() => Review, (review) => review.marker)
 	reviews: Review[];
 
-	@OneToMany(() => Bookmark, (bookmark) => bookmark.marker_id)
+	@OneToMany(() => Bookmark, (bookmark) => bookmark.marker)
 	bookmarks: Bookmark[];
 }

@@ -14,10 +14,10 @@ export class Review {
 	id: number;
 
 	@ManyToOne(() => User, (user) => user.reviews)
-	user_id: User;
+	user: User;
 
 	@ManyToOne(() => Marker, (marker) => marker.reviews)
-	marker_id: Marker;
+	marker: Marker;
 
 	@CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
 	createdAt: Date;

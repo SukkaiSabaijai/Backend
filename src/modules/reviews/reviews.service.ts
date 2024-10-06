@@ -36,8 +36,8 @@ export class ReviewsService {
 		}
 
 		const newReview = this.reviewRepository.create({
-			user_id: user,
-			marker_id: marker,
+			user: user,
+			marker: marker,
 			score: rating,
 			text: review,
 		});

@@ -1,3 +1,4 @@
+import { MinioService } from './../minio/minio.service';
 import { ChangePasswordDto } from './dto/requests/change-password.dto';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/requests/create-user.dto';
@@ -14,6 +15,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+    private readonly minioService: MinioService,
   ) { }
 
   async findExistingUser(username: string, email: string): Promise<User> {
@@ -31,8 +33,15 @@ export class UsersService {
     return user;
   }
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    const newUser = this.usersRepository.create(createUserDto);
+  async create(createUserDto: CreateUserDto, file: Express.Multer.File, password: string): Promise<User> {
+    const user_pic = file ? await this.minioService.uploadFile(file, 'user-pics') : undefined;
+
+    const newUser = this.usersRepository.create({
+      ...createUserDto,
+      password,
+      user_pic,
+    });
+
     return this.usersRepository.save(newUser);
   }
 
@@ -43,14 +52,21 @@ export class UsersService {
     await this.usersRepository.update(user_id, { refreshToken });
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<GetUserDto> {
+  async update(id: number, updateUserDto: UpdateUserDto, file: Express.Multer.File): Promise<GetUserDto> {
     const user = await this.usersRepository.findOneBy({ id });
+
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
 
     Object.assign(user, updateUserDto);
+
+    if (file) {
+      user.user_pic = await this.minioService.uploadFile(file, 'user-pics'); // Update user_pic only if file is present
+    }
+
     await this.usersRepository.save(user);
+
     return plainToInstance(GetUserDto, user, { excludeExtraneousValues: true });
   }
 

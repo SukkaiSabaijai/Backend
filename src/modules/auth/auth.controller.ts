@@ -9,6 +9,8 @@ import {
 	Req,
 	UseGuards,
 	Logger,
+	UseInterceptors,
+	UploadedFile,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { AuthService } from './auth.service';
@@ -17,13 +19,15 @@ import { AuthDto } from './dto/requests/auth.dto';
 import { AccessTokenGuard } from '../../common/accessToken.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { RefreshTokenGuard } from '../../common/refreshToken.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('auth')
 export class AuthController {
-	constructor(private authService: AuthService) {}
+	constructor(private authService: AuthService) { }
 	@Post('signup')
-	signup(@Body() createUserDto: CreateUserDto) {
-		return this.authService.signUp(createUserDto);
+	@UseInterceptors(FileInterceptor('profile_pic'))
+	signup(@Body() createUserDto: CreateUserDto, @UploadedFile() file: Express.Multer.File) {
+		return this.authService.signUp(createUserDto, file);
 	}
 
 	@Post('signin')

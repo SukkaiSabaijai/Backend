@@ -17,7 +17,6 @@ export class User {
 	@Column()
 	password: string;
 
-
 	@Column({ type: 'date', nullable: true })
 	date_of_birth: Date;
 
@@ -30,10 +29,10 @@ export class User {
 	@OneToMany(() => Marker, (marker) => marker.created_by)
 	markers: Marker[];
 
-	@OneToMany(() => Review, (review) => review.user_id)
+	@OneToMany(() => Review, (review) => review.user)
 	reviews: Review[];
 
-	@OneToMany(() => Bookmark, (bookmark) => bookmark.user_id)
+	@OneToMany(() => Bookmark, (bookmark) => bookmark.user)
 	bookmarks: Bookmark[];
 
 	@Column({ nullable: true })

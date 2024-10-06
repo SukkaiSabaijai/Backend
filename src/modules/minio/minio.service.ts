@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as Minio from 'minio';
+import * as crypto from 'crypto';
+import * as path from 'path';
 
 @Injectable()
 export class MinioService {
@@ -25,15 +27,24 @@ export class MinioService {
 		}
 	}
 
-	async uploadFile(file: Express.Multer.File, fileName: string) {
+	async uploadFile(file: Express.Multer.File, folder: string): Promise<string> {
+		const timestamp = Date.now();
+		const randomString = crypto.randomBytes(16).toString('hex');
+		const fileExtension = path.extname(file.originalname);
+
+		const fileName = `${timestamp}-${randomString}${fileExtension}`;
+		const filePath = `${folder}/${fileName}`;
+
 		await this.minioClient.putObject(
 			this.bucketName,
-			fileName,
+			filePath,
 			file.buffer,
 			file.size,
 		);
-		return fileName;
+
+		return filePath;
 	}
+
 
 	async getFileUrl(fileName: string) {
 		return await this.minioClient.presignedUrl(

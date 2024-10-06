@@ -7,5 +7,5 @@ export class MarkerPic {
 	id: number;
 
 	@ManyToOne(() => Marker, (marker) => marker.marker_pics)
-	marker_id: Marker;
+	marker: Marker;
 }

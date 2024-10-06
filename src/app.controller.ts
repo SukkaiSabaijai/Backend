@@ -7,6 +7,8 @@ import {
 	Delete,
 	UploadedFile,
 	UseInterceptors,
+	HttpException,
+	HttpStatus,
 } from '@nestjs/common';
 import { MinioService } from './modules/minio/minio.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -16,32 +18,18 @@ import * as path from 'path';
 @Controller()
 export class AppController {
 	constructor(private readonly minioService: MinioService) { }
-
-	@Post('covers')
-	@UseInterceptors(FileInterceptor('file'))
-	async uploadBookCover(@UploadedFile() file: Express.Multer.File) {
-		await this.minioService.createBucketIfNotExists();
-		const uniqueId = uuidv4();
-		const folderPath = '/';
-		const fileName = `${folderPath}${uniqueId}${path.extname(file.originalname)}`;
-
-		await this.minioService.uploadFile(file, fileName);
-		return fileName;
-	}
 	@Get()
 	getHello(): string {
 		return 'Hello World!';
 	}
 
-	@Get('covers/:fileName')
-	async getBookCover(@Param('fileName') fileName: string) {
-		const fileUrl = await this.minioService.getFileUrl(fileName);
-		return fileUrl;
-	}
-
-	@Delete('covers/:fileName')
-	async deleteBookCover(@Param('fileName') fileName: string) {
-		await this.minioService.deleteFile(fileName);
-		return fileName;
+	@Get('image/:folderName/:fileName')
+	async getImage(@Param('folderName') folderName: string, @Param('fileName') fileName: string): Promise<string> {
+		const objectName = `${folderName}/${fileName}`;
+		if (folderName !== 'marker-pics') {
+			throw new HttpException('access denied', HttpStatus.FORBIDDEN);
+		}
+		const url = await this.minioService.getFileUrl(objectName);
+		return url
 	}
 }

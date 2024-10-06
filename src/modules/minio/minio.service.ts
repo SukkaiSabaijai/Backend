@@ -46,13 +46,8 @@ export class MinioService {
 	}
 
 
-	async getFileUrl(fileName: string) {
-		return await this.minioClient.presignedUrl(
-			'GET',
-			this.bucketName,
-			fileName,
-			120,
-		);
+	async getFileUrl(fileName: string): Promise<string> {
+		return await this.minioClient.presignedUrl('GET', this.bucketName, fileName, 120);
 	}
 
 	async deleteFile(fileName: string) {

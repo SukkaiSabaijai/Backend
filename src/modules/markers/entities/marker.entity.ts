@@ -11,7 +11,7 @@ export class Marker {
 	@PrimaryGeneratedColumn()
 	id: number;
 
-	@ManyToOne(() => User, (user) => user.markers)
+	@ManyToOne(() => User, (user) => user.markers , { eager: true })
 	created_by: User;
 
     @ManyToOne(() => Grid, (grid) => grid.markers)

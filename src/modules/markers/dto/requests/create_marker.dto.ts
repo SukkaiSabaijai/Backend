@@ -1,14 +1,19 @@
-import { IsOptional } from "class-validator"
+import { IsNumber, IsOptional, IsString } from "class-validator"
 
 export class CreateMarkerDTO {
+    @IsNumber()
     latitude: number;
 
+    @IsNumber()
     longitude: number;
 
+    @IsString()
     type: string;
 
+    @IsString()
     location_name: string;
 
+    @IsString()
     detail: string;
     
     @IsOptional()
@@ -30,5 +35,6 @@ export class CreateMarkerDTO {
     wifi: boolean = false;
     
     @IsOptional()
+    @IsNumber()
     price: number = 0;
 }

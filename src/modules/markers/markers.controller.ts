@@ -1,8 +1,9 @@
-import { BadRequestException, Body, Controller, Get, Post, Query, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Param, ParseIntPipe, Post, Query, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { MarkersService } from './markers.service';
 import { CreateMarkerDTO } from './dto/requests/create_marker.dto';
 import { AccessTokenGuard } from 'src/common/accessToken.guard';
 import { FindMarker } from './dto/requests/find_marker.dto';
+import { MarkerDetail } from './dto/responses/marker_detail.dto';
 
 @Controller('markers')
 export class MarkersController {
@@ -28,11 +29,11 @@ export class MarkersController {
     @Get()
     @UsePipes(new ValidationPipe({ transform: true }))
     async find(@Query() query: FindMarker){
-        if (query.type === 'toilet'){
+        if (query.type === "toilet"){
             if (query.charger|| query.wifi || query.table){
                 throw new BadRequestException('Filter mismatch');
             }
-        } else if (query.type === 'rest_area'){
+        } else if (query.type === "rest_area"){
             if (query.disable || query.flush || query.hose){
                 throw new BadRequestException('Filter mismatch');
             }
@@ -40,5 +41,11 @@ export class MarkersController {
             throw new BadRequestException('Incorrect type');
         }
         return await this.markersService.find_marker(query);
+    }
+
+    @Get(':id')
+    @UsePipes(new ValidationPipe({ transform: true }))
+    async show_detail (@Param('id', ParseIntPipe) marker_id: number): Promise<MarkerDetail> {
+        return await this.markersService.get_marker_detail(marker_id);
     }
 }

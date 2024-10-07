@@ -9,6 +9,7 @@ import { CreateMarkerDTO } from './dto/requests/create_marker.dto';
 import { RestAreaCategory, ToiletCategory } from './entities/category.entity';
 import { FindMarker } from './dto/requests/find_marker.dto';
 import { ReturnMarker } from './dto/responses/return_marker.dto';
+import { MarkerDetail } from './dto/responses/marker_detail.dto';
 
 @Injectable()
 export class MarkersService {
@@ -60,7 +61,7 @@ export class MarkersService {
         }
 
         //subdivision grid
-        if (grid.marker_count >= 2) {
+        if (grid.marker_count >= 50) {
             grid = await this.sub_grid(grid,createMarkerDTO.latitude,createMarkerDTO.longitude);
         }
 
@@ -257,7 +258,7 @@ export class MarkersService {
                     continue;
                 }
             }
-            if (returnMarkers[i].type === "toilet"){
+            if (findMarker.type === "toilet"){
                 if (
                     await this.filter_condition(returnMarkers[i].toiletCategory.disable,findMarker.disable) ||
                     await this.filter_condition(returnMarkers[i].toiletCategory.flush,findMarker.flush) ||
@@ -291,9 +292,34 @@ export class MarkersService {
         return (inp === false && filter === true);
     }
 
-    async get_marker_detail(marker_id:number) {
-        const marker = await this.markerRepository.findOneBy({
-            id:marker_id
+    async get_marker_detail(marker_id:number): Promise<MarkerDetail> {
+        console.log(marker_id)
+        const marker = await this.markerRepository.findOne({
+            where: { id: marker_id }
         })
+        if (!marker) {
+            throw new BadRequestException('Marker not exist');
+        }
+        let category = [];
+        if (marker.type === "toilet") {
+            if (marker.toiletCategory.disable){category.push("disable");}
+            if (marker.toiletCategory.hose){category.push("hose");}
+            if (marker.toiletCategory.flush){category.push("flush");}
+        } else if (marker.type === "rest_area") {
+            if (marker.restAreaCategory.charger){category.push("charger");}
+            if (marker.restAreaCategory.wifi){category.push("wifi");}
+            if (marker.restAreaCategory.table){category.push("table");}
+        }
+        const newMarkerDetail = new MarkerDetail();
+        newMarkerDetail.created_by = marker.created_by.username;
+        newMarkerDetail.latitude =  marker.latitude;
+        newMarkerDetail.longitude = marker.longitude;
+        newMarkerDetail.location_name = marker.location_name;
+        newMarkerDetail.type = marker.type; 
+        newMarkerDetail.detail = marker.detail;
+        newMarkerDetail.avg_rating = marker.review_count > 0? marker.review_total_score/marker.review_count : 0;
+        newMarkerDetail.category = category;
+
+        return newMarkerDetail
     }
 }

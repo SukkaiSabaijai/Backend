@@ -1,3 +1,4 @@
+import { IsOptional } from 'class-validator';
 import { Marker } from 'src/modules/markers/entities/marker.entity';
 import { User } from 'src/modules/users/entities/user.entity';
 import {
@@ -13,18 +14,18 @@ export class Review {
 	@PrimaryGeneratedColumn()
 	id: number;
 
-	@ManyToOne(() => User, (user) => user.reviews)
-	user: User;
+  @ManyToOne(() => User, (user) => user.reviews)
+  user: User; // Update field name to 'user'
 
-	@ManyToOne(() => Marker, (marker) => marker.reviews)
-	marker: Marker;
+  @ManyToOne(() => Marker, (marker) => marker.reviews)
+  marker: Marker; // Update field name to 'marker'
 
 	@CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
 	createdAt: Date;
 
-	@Column()
-	score: number;
+  @Column()
+  rating: number;
 
-	@Column()
-	text: string;
+  @Column({nullable: true})
+  review: string | null;
 }

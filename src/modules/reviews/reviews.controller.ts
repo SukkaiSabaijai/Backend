@@ -1,32 +1,45 @@
-import { Controller, Post, Body, Param, Get } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Param,
+  Get,
+  UseGuards,
+  Req,
+  Delete,
+} from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
 import { Review } from './entities/review.entity';
+import { AccessTokenGuard } from 'src/common/accessToken.guard';
+import { CreateReviewsDto } from './dto/create-review.dto';
 
 @Controller('reviews')
 export class ReviewsController {
 	constructor(private readonly reviewsService: ReviewsService) {}
 
-	@Post()
-	async createReview(
-		@Body('userId') userId: number,
-		@Body('markerId') markerId: number,
-		@Body('rating') rating: number,
-		@Body('review') review: string,
-	): Promise<Review> {
-		return this.reviewsService.createReview(userId, markerId, rating, review);
-	}
+  // Post /review/create
+  @UseGuards(AccessTokenGuard)
+  @Post('create')
+  async createReview(
+    @Req() req,
+    @Body() createReviewsDto: CreateReviewsDto,
+  ): Promise<Review> {
+    const userId = await req.user['sub'];
+    return this.reviewsService.createReview(userId, createReviewsDto);
+  }
 
-	// GET /reviews/marker/:markerId
-	@Get('/marker/:markerId')
-	async getReviewsByMarker(
-		@Param('markerId') markerId: number,
-	): Promise<Review[]> {
-		return this.reviewsService.findReviewsByMarker(markerId);
-	}
+  @Get('marker/:markerId/reviews')
+  async getReviewsForMarker(
+    @Param('markerId') markerId: number,
+  ): Promise<Review[]> {
+    return this.reviewsService.getReviewsByMarkerId(markerId);
+  }
 
-	// GET /reviews/user/:userId
-	@Get('/user/:userId')
-	async getReviewsByUser(@Param('userId') userId: number): Promise<Review[]> {
-		return this.reviewsService.findReviewsByUser(userId);
-	}
+  // Delete /reviews/delete/:id
+  @UseGuards(AccessTokenGuard)
+  @Delete('delete/:id')
+  async deleteReview(@Param('id') reviewId: number, @Req() req): Promise<void> {
+    const userId = req.user['sub'];
+    return await this.reviewsService.deleteReview(reviewId, userId);
+  }
 }

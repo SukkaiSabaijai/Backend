@@ -3,8 +3,17 @@ import { Repository } from 'typeorm';
 import { Review } from './entities/review.entity';
 import { User } from '../users/entities/user.entity';
 import { Marker } from '../markers/entities/marker.entity';
-import { Injectable, NotFoundException } from '@nestjs/common';
-
+import {
+  Body,
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  UseGuards,
+} from '@nestjs/common';
+import { AccessTokenGuard } from 'src/common/accessToken.guard';
+import { Request } from '@nestjs/common';
+import { CreateReviewsDto } from './dto/create-review.dto';
+import { CreateUserDto } from '../users/dto/requests/create-user.dto';
 @Injectable()
 export class ReviewsService {
 	constructor(
@@ -16,48 +25,51 @@ export class ReviewsService {
 		private readonly markerRepository: Repository<Marker>,
 	) { }
 
-	// Create review
-	async createReview(
-		userId: number,
-		markerId: number,
-		rating: number,
-		review: string,
-	): Promise<Review> {
-		const user = await this.userRepository.findOne({ where: { id: userId } });
-		if (!user) {
-			throw new NotFoundException('User not found');
-		}
+  async createReview(
+    user_id: number,
+    createReviewDto: CreateReviewsDto,
+  ): Promise<Review> {
+    const { markerId, rating, review } = createReviewDto;
+    const marker = await this.markerRepository.findOne({
+      where: { id: markerId },
+    });
+    if (!marker) {
+      throw new NotFoundException('Marker not found');
+    }
+    const user = await this.userRepository.findOne({ where: { id: user_id } });
+    const newReview = this.reviewRepository.create({
+      user: user,
+      marker: marker,
+      rating: rating,
+      review: review ?? null,
+    });
+    return await this.reviewRepository.save(newReview);
+  }
 
-		const marker = await this.markerRepository.findOne({
-			where: { id: markerId },
-		});
-		if (!marker) {
-			throw new NotFoundException('Marker not found');
-		}
+  async getReviewsByMarkerId(markerId: number): Promise<Review[]> {
+    const marker = await this.markerRepository.findOne({
+      where: { id: markerId },
+    });
+    if (!marker) {
+      throw new NotFoundException('Marker not found');
+    }
+    const reviews = await marker.reviews;
+  
+    return reviews;
+  }
 
-		const newReview = this.reviewRepository.create({
-			user: user,
-			marker: marker,
-			score: rating,
-			text: review,
-		});
-		return await this.reviewRepository.save(newReview);
-	}
-
-	async findReviewsByMarker(markerId: number): Promise<Review[]> {
-		return await this.reviewRepository.find({
-			where: { id: markerId }, // Use the correct field name
-			relations: ['user'], // Fetch related user details if needed
-		});
-	}
-
-	async findReviewsByUser(userId: number): Promise<Review[]> {
-		const user = await this.userRepository.findOne({ where: { id: userId } });
-		if (!user) throw new NotFoundException('User not found');
-
-		return await this.reviewRepository.find({
-			where: { id: userId }, // Use the user object in the condition
-			relations: ['marker'], // Fetch the related marker
-		});
-	}
+  async deleteReview(reviewId: number, userId: number): Promise<void> {
+    const review = await this.reviewRepository.findOne({
+      where: { id: reviewId },
+      relations: ['user'],
+    });
+    if (!review) {
+      throw new NotFoundException('Review not found');
+    }
+    if (review.user.id !== userId) {
+      throw new ForbiddenException('You are not allowed to delete this review');
+    }
+    await this.reviewRepository.remove(review);
+    console.log('delete successful');
+  }
 }

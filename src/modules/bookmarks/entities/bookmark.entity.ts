@@ -7,11 +7,11 @@ export class Bookmark {
 	@PrimaryGeneratedColumn()
 	id: number;
 
-	@ManyToOne(() => User, (user) => user.bookmarks)
-	user: User;
+  @ManyToOne(() => User, (user) => user.bookmarks)
+  user: User;
 
-	@ManyToOne(() => Marker, (marker) => marker.bookmarks)
-	marker: Marker;
+  @ManyToOne(() => Marker, (marker) => marker.bookmarks)
+  marker: Marker;
 
 	@Column()
 	short_name: string;

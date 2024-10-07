@@ -14,28 +14,30 @@ import { Grid } from './modules/markers/entities/grid.entity';
 import { MarkerPic } from './modules/markers/entities/marker_pics.entity';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { MinioModule } from './modules/minio/minio.module';
 import { RestAreaCategory, ToiletCategory } from './modules/markers/entities/category.entity';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.POSTGRES_HOST,
-      port: parseInt(<string>process.env.POSTGRES_PORT),
-      username: process.env.POSTGRES_USER,
-      password: process.env.POSTGRES_PASSWORD,
-      database: process.env.POSTGRES_DATABASE,
-      entities: [User, Marker, Review, Bookmark, Grid, MarkerPic, RestAreaCategory, ToiletCategory],
-      synchronize: true,
-    }),
-    AuthModule,
-    UsersModule,
-    MarkersModule,
-    ReviewsModule,
-    BookmarksModule,
-  ],
-  controllers: [AppController],
-  providers: [AppService],
+	imports: [
+		ConfigModule.forRoot({ isGlobal: true }),
+		TypeOrmModule.forRoot({
+			type: 'postgres',
+			host: process.env.POSTGRES_HOST,
+			port: parseInt(<string>process.env.POSTGRES_PORT),
+			username: process.env.POSTGRES_USER,
+			password: process.env.POSTGRES_PASSWORD,
+			database: process.env.POSTGRES_DATABASE,
+			entities: [User, Marker, Review, Bookmark, Grid, MarkerPic, RestAreaCategory, ToiletCategory],
+			synchronize: true,
+		}),
+		AuthModule,
+		UsersModule,
+		MarkersModule,
+		ReviewsModule,
+		BookmarksModule,
+		MinioModule,
+	],
+	controllers: [AppController],
+	providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

@@ -4,11 +4,11 @@ import { Marker } from "./marker.entity";
 
 @Entity()
 export class Grid {
-  @PrimaryGeneratedColumn()
-  id: number;
+	@PrimaryGeneratedColumn()
+	id: number;
 
-  @ManyToOne(() => Grid, (grid) => grid.child_grid)
-  parent_grid: Grid;
+	@ManyToOne(() => Grid, (grid) => grid.child_grid)
+	parent_grid: Grid;
 
     @OneToMany(() => Grid, (grid) => grid.parent_grid)
     child_grid: Promise<Grid[]>

@@ -1,4 +1,9 @@
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import { MinioService } from './../minio/minio.service';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -12,23 +17,31 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private minioService: MinioService
   ) { }
 
-  async signUp(createUserDto: CreateUserDto): Promise<any> {
-    const existingUser = await this.usersService.findByUsername(
+  async signUp(createUserDto: CreateUserDto, file: Express.Multer.File): Promise<any> {
+    const existingUser = await this.usersService.findExistingUser(
       createUserDto.username,
+      createUserDto.email,
     );
+
     if (existingUser) {
       throw new BadRequestException('user already exists');
     }
 
     const hash = await this.hashData(createUserDto.password);
-    const newUser = await this.usersService.create({
-      ...createUserDto,
-      password: hash,
-    });
+
+    let userPicPath: string | undefined;
+    if (file) {
+      userPicPath = await this.minioService.uploadFile(file, 'user-pics');
+    }
+
+    const newUser = await this.usersService.create(createUserDto, file, hash);
+
     const tokens = await this.getTokens(newUser.id, newUser.username);
     await this.updateRefreshToken(newUser.id, tokens.refreshToken);
+
     return tokens;
   }
 

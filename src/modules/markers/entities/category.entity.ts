@@ -1,13 +1,31 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import {  Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
-export class Category{
+export class ToiletCategory {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column()
-    text: string
+    @Column({ default: false })
+    disable: boolean;
 
-    @Column()
-    type: string
+    @Column({ default: false })
+    hose: boolean;
+
+    @Column({ default: false })
+    flush: boolean;
+}
+
+@Entity()
+export class RestAreaCategory {
+    @PrimaryGeneratedColumn()
+    id: number
+
+    @Column({ default: false })
+    table: boolean;
+
+    @Column({ default: false })
+    charger: boolean;
+
+    @Column({ default: false })
+    wifi: boolean;    
 }

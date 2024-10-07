@@ -1,5 +1,5 @@
 import exp from "constants";
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Marker } from "./marker.entity";
 
 @Entity()
@@ -11,26 +11,30 @@ export class Grid{
     parent_grid: Grid
 
     @OneToMany(() => Grid, (grid) => grid.parent_grid)
-    child_grid: Grid[]
+    child_grid: Promise<Grid[]>
 
-    @Column()
+    @ManyToMany(() => Grid)
+    @JoinTable()
+    neighbors_grid: Grid[]
+
+    @Column({default: 0})
     level: number
 
-    @Column()
+    @Column({type: "float"})
     max_latitude: number
 
-    @Column()
+    @Column({type: "float"})
     min_latitude: number
 
-    @Column()
+    @Column({type: "float"})
     max_longitude: number
 
-    @Column()
-    mix_longitude: number
+    @Column({type: "float"})
+    min_longitude: number
 
-    @Column()
+    @Column({default: 0})
     marker_count: number
 
     @OneToMany(() => Marker, (marker) => marker.grid_id)
-    markers: Marker[]
+    markers: Promise<Marker[]>
 }

@@ -27,7 +27,7 @@ export class User {
     user_pic: string
 
     @OneToMany(() => Marker, (marker) => marker.created_by)
-    markers: Marker[]
+    markers: Promise<Marker[]>
 
     @OneToMany(() => Review, (review) => review.user_id)
     reviews: Review[]

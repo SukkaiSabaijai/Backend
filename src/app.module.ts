@@ -11,10 +11,10 @@ import { BookmarksModule } from './modules/bookmarks/bookmarks.module';
 import { Review } from './modules/reviews/entities/review.entity';
 import { Bookmark } from './modules/bookmarks/entities/bookmark.entity';
 import { Grid } from './modules/markers/entities/grid.entity';
-import { Category } from './modules/markers/entities/category.entity';
 import { MarkerPic } from './modules/markers/entities/marker_pics.entity';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { RestAreaCategory, ToiletCategory } from './modules/markers/entities/category.entity';
 
 @Module({
   imports: [
@@ -26,7 +26,7 @@ import { AuthModule } from './modules/auth/auth.module';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DATABASE,
-      entities: [User, Marker, Review, Bookmark, Grid, Category, MarkerPic],
+      entities: [User, Marker, Review, Bookmark, Grid, MarkerPic, RestAreaCategory, ToiletCategory],
       synchronize: true,
     }),
     AuthModule,

@@ -5,7 +5,8 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class BookmarksService {
-    constructor(
-        @InjectRepository(Bookmark) private bookmarkRepository: Repository<Bookmark>
-    ){}
+  constructor(
+    @InjectRepository(Bookmark)
+    private bookmarkRepository: Repository<Bookmark>,
+  ) {}
 }

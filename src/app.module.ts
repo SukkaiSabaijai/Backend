@@ -33,7 +33,7 @@ import { RestAreaCategory, ToiletCategory } from './modules/markers/entities/cat
     UsersModule,
     MarkersModule,
     ReviewsModule,
-    BookmarksModule
+    BookmarksModule,
   ],
   controllers: [AppController],
   providers: [AppService],

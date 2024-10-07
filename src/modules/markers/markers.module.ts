@@ -11,6 +11,6 @@ import { RestAreaCategory, ToiletCategory } from './entities/category.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([User,Marker,MarkerPic,Grid,RestAreaCategory,ToiletCategory])],
   controllers: [MarkersController],
-  providers: [MarkersService]
+  providers: [MarkersService],
 })
 export class MarkersModule {}

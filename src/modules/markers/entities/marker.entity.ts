@@ -7,12 +7,12 @@ import { Grid } from "./grid.entity";
 import { RestAreaCategory, ToiletCategory } from "./category.entity";
 
 @Entity()
-export class Marker{
-    @PrimaryGeneratedColumn()
-    id: number
+export class Marker {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @ManyToOne(() => User, (user) => user.markers)
-    created_by: User
+  @ManyToOne(() => User, (user) => user.markers)
+  created_by: User;
 
     @ManyToOne(() => Grid, (grid) => grid.markers)
     grid_id: Grid
@@ -23,14 +23,14 @@ export class Marker{
     @Column({type: "float"})
     longitude: number
 
-    @Column()
-    location_name: string
+  @Column()
+  location_name: string;
 
-    @Column()
-    type: string
+  @Column()
+  type: string;
 
-    @Column()
-    detail: string
+  @Column()
+  detail: string;
 
     @Column({default: 0})
     review_total_score: number
@@ -49,12 +49,12 @@ export class Marker{
     @JoinColumn()
     restAreaCategory: RestAreaCategory
 
-    @OneToMany(() => MarkerPic,(marker_pic) => marker_pic.marker_id)
-    marker_pics: MarkerPic[]
+  @OneToMany(() => MarkerPic, (marker_pic) => marker_pic.marker_id)
+  marker_pics: MarkerPic[];
 
-    @OneToMany(() => Review, (review) => review.marker_id)
-    reviews: Review[]
+  @OneToMany(() => Review, (review) => review.marker_id)
+  reviews: Review[];
 
-    @OneToMany(() => Bookmark, (bookmark) => bookmark.marker_id)
-    bookmarks: Bookmark[]
+  @OneToMany(() => Bookmark, (bookmark) => bookmark.marker_id)
+  bookmarks: Bookmark[];
 }

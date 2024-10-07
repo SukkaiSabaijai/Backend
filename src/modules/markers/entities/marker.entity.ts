@@ -56,6 +56,6 @@ export class Marker {
   @OneToMany(() => Review, (review) => review.marker)
   reviews: Promise<Review[]>;
 
-  @OneToMany(() => Bookmark, (bookmark) => bookmark.marker_id)
+  @OneToMany(() => Bookmark, (bookmark) => bookmark.marker.id)
   bookmarks: Bookmark[];
 }

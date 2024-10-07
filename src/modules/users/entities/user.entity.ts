@@ -32,7 +32,7 @@ export class User {
     @OneToMany(() => Review, (review) => review.user)
     reviews: Review[]
 
-    @OneToMany(() => Bookmark, (bookmark) => bookmark.user_id)
+    @OneToMany(() => Bookmark, (bookmark) => bookmark.user.id)
     bookmarks: Bookmark[]
 
     @Column({ nullable: true })

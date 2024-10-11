@@ -23,6 +23,14 @@ export class MarkersService {
     ) {}
 
     async create_marker( user_id : number, createMarkerDTO : CreateMarkerDTO) {
+        const exMarker = await this.markerRepository.findOneBy({
+            latitude: createMarkerDTO.latitude,
+            longitude: createMarkerDTO.longitude
+        });
+
+        if (exMarker) {
+            throw new BadRequestException('Marker already exist');
+        }
         if (createMarkerDTO.type !== 'toilet' && createMarkerDTO.type !== 'rest_area') {
             throw new BadRequestException('Type not match');
         }
@@ -69,9 +77,11 @@ export class MarkersService {
         const newMarker = new Marker()
         if (createMarkerDTO.type === 'toilet') {
             const newToiletCategory = new ToiletCategory();
-            newToiletCategory.disable = createMarkerDTO.disable;
-            newToiletCategory.hose = createMarkerDTO.hose;
-            newToiletCategory.flush = createMarkerDTO.flush;
+            createMarkerDTO.category.forEach((categoryName) => {
+                newToiletCategory.disable = newToiletCategory.disable || categoryName === 'disable';
+                newToiletCategory.flush = newToiletCategory.flush || categoryName === 'flush';
+                newToiletCategory.hose = newToiletCategory.hose || categoryName === 'hose';
+            })
             
             newMarker.created_by = user;
             newMarker.grid_id = grid;
@@ -85,9 +95,11 @@ export class MarkersService {
 
         } else if (createMarkerDTO.type === 'rest_area') {
             const newRestAreaCategory = new RestAreaCategory();
-            newRestAreaCategory.table = createMarkerDTO.table;
-            newRestAreaCategory.charger = createMarkerDTO.charger;
-            newRestAreaCategory.wifi = createMarkerDTO.wifi;
+            createMarkerDTO.category.forEach((categoryName) => {
+                newRestAreaCategory.charger = categoryName === 'charger';
+                newRestAreaCategory.table = categoryName === 'table';
+                newRestAreaCategory.wifi = categoryName === 'wifi';
+            })
             
             newMarker.created_by = user;
             newMarker.grid_id = grid;

@@ -15,25 +15,10 @@ export class CreateMarkerDTO {
 
     @IsString()
     detail: string;
-    
-    @IsOptional()
-    disable: boolean = false;
 
     @IsOptional()
-    hose: boolean = false;
+    category: string[] = [];
 
-    @IsOptional()
-    flush: boolean = false;
-
-    @IsOptional()
-    table: boolean = false;
-
-    @IsOptional()
-    charger: boolean = false;
-
-    @IsOptional()
-    wifi: boolean = false;
-    
     @IsOptional()
     @IsNumber()
     price: number = 0;

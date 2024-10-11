@@ -13,13 +13,17 @@ export class MarkersController {
     @Post('create')
     async create_marker(@Req() req, @Body() createMarkerDTO:CreateMarkerDTO){
         if (createMarkerDTO.type === 'toilet'){
-            if (createMarkerDTO.charger|| createMarkerDTO.wifi || createMarkerDTO.table){
-                throw new BadRequestException('Filter mismatch');
-            }
+            createMarkerDTO.category.forEach((categoryName) => {
+                if (categoryName === 'charger' || categoryName === 'table' || categoryName === 'wifi'){
+                    throw new BadRequestException('Filter mismatch');
+                }
+            })
         } else if (createMarkerDTO.type === 'rest_area'){
-            if (createMarkerDTO.disable || createMarkerDTO.flush || createMarkerDTO.hose){
-                throw new BadRequestException('Filter mismatch');
-            }
+            createMarkerDTO.category.forEach((categoryName) => {
+                if (categoryName === 'disable' || categoryName === 'flush' || categoryName === 'hose'){
+                    throw new BadRequestException('Filter mismatch');
+                }
+            })
         } else {
             throw new BadRequestException('Incorrect type');
         }

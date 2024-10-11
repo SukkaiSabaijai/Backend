@@ -21,10 +21,6 @@ export class FindMarker {
     @Transform(({ value }) => parseInt(value))
     min_longitude: number;
 
-    @IsInt()
-    @Transform(({ value }) => parseInt(value))
-    zoom_scale: number;
-
     @Transform(({ value }) => value === 'true')
     @IsBoolean()
     disable: boolean = false;

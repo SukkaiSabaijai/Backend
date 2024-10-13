@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UseGuards } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
 import { Equal, LessThan, LessThanOrEqual, MoreThan, MoreThanOrEqual, Repository } from 'typeorm';
@@ -10,6 +10,7 @@ import { RestAreaCategory, ToiletCategory } from './entities/category.entity';
 import { FindMarker } from './dto/requests/find_marker.dto';
 import { ReturnMarker } from './dto/responses/return_marker.dto';
 import { MarkerDetail } from './dto/responses/marker_detail.dto';
+import { MinioService } from '../minio/minio.service';
 
 @Injectable()
 export class MarkersService {
@@ -19,10 +20,11 @@ export class MarkersService {
         @InjectRepository(MarkerPic) private markerpicRepository: Repository<MarkerPic>,
         @InjectRepository(Grid) private gridRepository: Repository<Grid>,
         @InjectRepository(RestAreaCategory) private restareacategoryRepository: Repository<RestAreaCategory>,
-        @InjectRepository(ToiletCategory) private tolietcategoryRepository: Repository<ToiletCategory>
+        @InjectRepository(ToiletCategory) private tolietcategoryRepository: Repository<ToiletCategory>,
+        private minioService:MinioService
     ) {}
 
-    async create_marker( user_id : number, createMarkerDTO : CreateMarkerDTO) {
+    async create_marker( user_id : number, createMarkerDTO : CreateMarkerDTO, img: Express.Multer.File[]) {
         const exMarker = await this.markerRepository.findOneBy({
             latitude: createMarkerDTO.latitude,
             longitude: createMarkerDTO.longitude
@@ -73,6 +75,16 @@ export class MarkersService {
             grid = await this.sub_grid(grid,createMarkerDTO.latitude,createMarkerDTO.longitude);
         }
 
+        //upload image
+        let markerPic: MarkerPic[] = [];
+        for (const imgFile of img) {
+            const path = await this.minioService.uploadFile(imgFile, 'marker-pics');
+            const newMarkerPic = new MarkerPic();
+            newMarkerPic.path = path;
+            markerPic.push(newMarkerPic);
+        }
+        console.log(markerPic);
+
         //create marker
         const newMarker = new Marker()
         if (createMarkerDTO.type === 'toilet') {
@@ -83,14 +95,6 @@ export class MarkersService {
                 newToiletCategory.hose = newToiletCategory.hose || categoryName === 'hose';
             })
             
-            newMarker.created_by = user;
-            newMarker.grid_id = grid;
-            newMarker.latitude = createMarkerDTO.latitude;
-            newMarker.longitude = createMarkerDTO.longitude;
-            newMarker.type = createMarkerDTO.type;
-            newMarker.location_name = createMarkerDTO.location_name;
-            newMarker.detail = createMarkerDTO.detail;
-            newMarker.price = createMarkerDTO.price;
             newMarker.toiletCategory = newToiletCategory;
 
         } else if (createMarkerDTO.type === 'rest_area') {
@@ -101,17 +105,18 @@ export class MarkersService {
                 newRestAreaCategory.wifi = categoryName === 'wifi';
             })
             
-            newMarker.created_by = user;
-            newMarker.grid_id = grid;
-            newMarker.latitude = createMarkerDTO.latitude;
-            newMarker.longitude = createMarkerDTO.longitude;
-            newMarker.type = createMarkerDTO.type;
-            newMarker.location_name = createMarkerDTO.location_name;
-            newMarker.detail = createMarkerDTO.detail;
-            newMarker.price = createMarkerDTO.price;
             newMarker.restAreaCategory = newRestAreaCategory;
 
         }
+        newMarker.created_by = user;
+        newMarker.grid_id = grid;
+        newMarker.latitude = createMarkerDTO.latitude;
+        newMarker.longitude = createMarkerDTO.longitude;
+        newMarker.type = createMarkerDTO.type;
+        newMarker.location_name = createMarkerDTO.location_name;
+        newMarker.detail = createMarkerDTO.detail;
+        newMarker.price = createMarkerDTO.price;
+        newMarker.marker_pics = Promise.resolve(markerPic)
 
         const saveMarker = await this.markerRepository.save(newMarker);
         grid.marker_count += 1;
@@ -322,6 +327,12 @@ export class MarkersService {
             if (marker.restAreaCategory.wifi){category.push("wifi");}
             if (marker.restAreaCategory.table){category.push("table");}
         }
+        const marker_pic = await marker.marker_pics;
+        let img_path: string[] = [];
+        marker_pic.forEach((img) => {
+            img_path.push(img.path);
+        })
+
         const newMarkerDetail = new MarkerDetail();
         newMarkerDetail.created_by = marker.created_by.username;
         newMarkerDetail.latitude =  marker.latitude;
@@ -331,7 +342,24 @@ export class MarkersService {
         newMarkerDetail.detail = marker.detail;
         newMarkerDetail.avg_rating = marker.review_count > 0? marker.review_total_score/marker.review_count : 0;
         newMarkerDetail.category = category;
+        newMarkerDetail.img = img_path;
 
         return newMarkerDetail
+    }
+
+    async delete_marker(marker_id:number, user_id:number) {
+        const marker = await this.markerRepository.findOneBy({id: marker_id});
+        if (!marker) {
+            throw new BadRequestException('Marker not found');
+        }
+        if (marker.created_by.id !== user_id){
+            throw new UnauthorizedException('No permission')
+        }
+        const imgs = await marker.marker_pics;
+        for (const imgFile of imgs) {
+            await this.minioService.deleteFile(imgFile.path);
+        }
+        await this.markerRepository.remove(marker)
+        return {status:"success"};
     }
 }

@@ -17,7 +17,7 @@ export class Review {
   @ManyToOne(() => User, (user) => user.reviews)
   user: User; // Update field name to 'user'
 
-  @ManyToOne(() => Marker, (marker) => marker.reviews)
+  @ManyToOne(() => Marker, (marker) => marker.reviews, { onDelete: 'CASCADE' })
   marker: Marker; // Update field name to 'marker'
 
 	@CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })

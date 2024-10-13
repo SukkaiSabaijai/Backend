@@ -49,12 +49,12 @@ export class Marker {
     @JoinColumn()
     restAreaCategory: RestAreaCategory
 
-	@OneToMany(() => MarkerPic, (marker_pic) => marker_pic.marker)
-	marker_pics: MarkerPic[];
+	@OneToMany(() => MarkerPic, (marker_pic) => marker_pic.marker, {cascade: true})
+	marker_pics: Promise<MarkerPic[]>;
 
-	@OneToMany(() => Review, (review) => review.marker)
+	@OneToMany(() => Review, (review) => review.marker, {cascade: true})
 	reviews: Promise<Review[]>;
 
-	@OneToMany(() => Bookmark, (bookmark) => bookmark.marker)
+	@OneToMany(() => Bookmark, (bookmark) => bookmark.marker, {cascade: true})
 	bookmarks: Bookmark[];
 }

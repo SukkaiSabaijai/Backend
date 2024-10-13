@@ -8,4 +8,5 @@ export class MarkerDetail{
     avg_rating: number;
     price: number;
     category: string[];
+    img: string[] = [];
 }

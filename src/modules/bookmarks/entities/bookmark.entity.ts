@@ -10,7 +10,7 @@ export class Bookmark {
   @ManyToOne(() => User, (user) => user.bookmarks)
   user: User;
 
-  @ManyToOne(() => Marker, (marker) => marker.bookmarks)
+  @ManyToOne(() => Marker, (marker) => marker.bookmarks, { onDelete: 'CASCADE' })
   marker: Marker;
 
 	@Column()

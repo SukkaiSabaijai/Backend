@@ -1,6 +1,6 @@
 import { BadRequestException, Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Query, Req, UploadedFiles, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
 import { MarkersService } from './markers.service';
-import { CreateMarkerDTO } from './dto/requests/create_marker.dto';
+import { Category, CreateMarkerDTO, MarkerType } from './dto/requests/create_marker.dto';
 import { AccessTokenGuard } from 'src/common/accessToken.guard';
 import { FindMarker } from './dto/requests/find_marker.dto';
 import { MarkerDetail } from './dto/responses/marker_detail.dto';
@@ -13,24 +13,20 @@ export class MarkersController {
     @UseGuards(AccessTokenGuard)
     @UseInterceptors(FilesInterceptor('img',5))
     @Post('create')
-    async create_marker(@Req() req, @Body('jsonData') jsonData: string, @UploadedFiles() img: Express.Multer.File[]){
-        const createMarkerDTO: CreateMarkerDTO = JSON.parse(jsonData);
-        console.log(img.length)
-        if (createMarkerDTO.type === 'toilet'){
-            createMarkerDTO.category.forEach((categoryName) => {
-                if (categoryName === 'charger' || categoryName === 'table' || categoryName === 'wifi'){
-                    throw new BadRequestException('Filter mismatch');
-                }
-            })
-        } else if (createMarkerDTO.type === 'rest_area'){
-            createMarkerDTO.category.forEach((categoryName) => {
-                if (categoryName === 'disable' || categoryName === 'flush' || categoryName === 'hose'){
-                    throw new BadRequestException('Filter mismatch');
-                }
-            })
-        } else {
-            throw new BadRequestException('Incorrect type');
+    async create_marker(@Req() req, @Body() createMarkerDTO: CreateMarkerDTO, @UploadedFiles() img: Express.Multer.File[]){
+        //console.log(createMarkerDTO);
+        
+        const validCategoriesMap = {
+            [MarkerType.REST_AREA]: [Category.CHARGER, Category.TABLE, Category.WIFI],
+            [MarkerType.TOILET]: [Category.DISABLE, Category.FLUSH, Category.HOSE],
+        };
+
+        const validCategories = validCategoriesMap[createMarkerDTO.type];
+        const isValidCategory = createMarkerDTO.category.every(categoryName => validCategories.includes(categoryName));
+        if (!isValidCategory){
+            throw new BadRequestException('Filter mismatch');
         }
+
         return this.markersService.create_marker(req.user['sub'],createMarkerDTO,img);
     }
 

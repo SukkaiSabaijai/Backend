@@ -10,12 +10,6 @@ import { UpdateBookmarkDto } from './dto/update-bookmark-dto';
 
 @Injectable()
 export class BookmarksService {
-<<<<<<< HEAD
-	constructor(
-		@InjectRepository(Bookmark)
-		private bookmarkRepository: Repository<Bookmark>,
-	) {}
-=======
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
@@ -99,5 +93,4 @@ export class BookmarksService {
 
     return await this.bookmarkRepository.save(bookmark);
   }
->>>>>>> origin/Bookmark
 }

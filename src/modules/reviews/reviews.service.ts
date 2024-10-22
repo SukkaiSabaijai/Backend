@@ -16,14 +16,14 @@ import { CreateReviewsDto } from './dto/create-review.dto';
 import { CreateUserDto } from '../users/dto/requests/create-user.dto';
 @Injectable()
 export class ReviewsService {
-	constructor(
-		@InjectRepository(Review)
-		private readonly reviewRepository: Repository<Review>,
-		@InjectRepository(User)
-		private readonly userRepository: Repository<User>,
-		@InjectRepository(Marker)
-		private readonly markerRepository: Repository<Marker>,
-	) { }
+  constructor(
+    @InjectRepository(Review)
+    private readonly reviewRepository: Repository<Review>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    @InjectRepository(Marker)
+    private readonly markerRepository: Repository<Marker>,
+  ) { }
 
   async createReview(
     user_id: number,
@@ -43,6 +43,8 @@ export class ReviewsService {
       rating: rating,
       review: review ?? null,
     });
+    marker.review_count += 1;
+    marker.review_total_score += newReview.rating
     return await this.reviewRepository.save(newReview);
   }
 
@@ -54,22 +56,27 @@ export class ReviewsService {
       throw new NotFoundException('Marker not found');
     }
     const reviews = await marker.reviews;
-  
+
     return reviews;
   }
 
-  async deleteReview(reviewId: number, userId: number): Promise<void> {
+  async deleteReview(reviewId: number, userId: number, markerId: number): Promise<void> {
+    const marker = await this.markerRepository.findOne({
+      where: { id: markerId },
+    });
     const review = await this.reviewRepository.findOne({
       where: { id: reviewId },
       relations: ['user'],
     });
+
     if (!review) {
       throw new NotFoundException('Review not found');
     }
     if (review.user.id !== userId) {
       throw new ForbiddenException('You are not allowed to delete this review');
     }
+    marker.review_count -= 1;
+    marker.review_total_score -= review.rating
     await this.reviewRepository.remove(review);
-    console.log('delete successful');
   }
 }

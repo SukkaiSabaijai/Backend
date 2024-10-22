@@ -86,7 +86,9 @@ export class MarkersService {
         console.log(markerPic);
 
         //create marker
-        const newMarker = new Marker()
+        const newMarker = this.markerRepository.create({
+            ...createMarkerDTO
+        })
         if (createMarkerDTO.type === 'toilet') {
             const newToiletCategory = new ToiletCategory();
             createMarkerDTO.category.forEach((categoryName) => {
@@ -100,9 +102,9 @@ export class MarkersService {
         } else if (createMarkerDTO.type === 'rest_area') {
             const newRestAreaCategory = new RestAreaCategory();
             createMarkerDTO.category.forEach((categoryName) => {
-                newRestAreaCategory.charger = categoryName === 'charger';
-                newRestAreaCategory.table = categoryName === 'table';
-                newRestAreaCategory.wifi = categoryName === 'wifi';
+                newRestAreaCategory.charger = newRestAreaCategory.charger || categoryName === 'charger';
+                newRestAreaCategory.table = newRestAreaCategory.table || categoryName === 'table';
+                newRestAreaCategory.wifi = newRestAreaCategory.wifi || categoryName === 'wifi';
             })
             
             newMarker.restAreaCategory = newRestAreaCategory;
@@ -110,15 +112,9 @@ export class MarkersService {
         }
         newMarker.created_by = user;
         newMarker.grid_id = grid;
-        newMarker.latitude = createMarkerDTO.latitude;
-        newMarker.longitude = createMarkerDTO.longitude;
-        newMarker.type = createMarkerDTO.type;
-        newMarker.location_name = createMarkerDTO.location_name;
-        newMarker.detail = createMarkerDTO.detail;
-        newMarker.price = createMarkerDTO.price;
         newMarker.marker_pics = Promise.resolve(markerPic)
 
-        const saveMarker = await this.markerRepository.save(newMarker);
+        await this.markerRepository.save(newMarker);
         grid.marker_count += 1;
         await this.gridRepository.save(grid);
         await this.userRepository.save(user);

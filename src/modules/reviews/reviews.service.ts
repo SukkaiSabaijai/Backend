@@ -43,6 +43,8 @@ export class ReviewsService {
       rating: rating,
       review: review ?? null,
     });
+    marker.review_count += 1;
+    marker.review_avg_score = (marker.review_avg_score * marker.review_count + rating) / (marker.review_count);
     return await this.reviewRepository.save(newReview);
   }
 
@@ -58,18 +60,23 @@ export class ReviewsService {
     return reviews;
   }
 
-  async deleteReview(reviewId: number, userId: number): Promise<void> {
+  async deleteReview(reviewId: number, userId: number, markerId: number): Promise<void> {
+    const marker = await this.markerRepository.findOne({
+      where: { id: markerId },
+    }); 
     const review = await this.reviewRepository.findOne({
       where: { id: reviewId },
       relations: ['user'],
     });
+    
     if (!review) {
       throw new NotFoundException('Review not found');
     }
     if (review.user.id !== userId) {
       throw new ForbiddenException('You are not allowed to delete this review');
     }
+    marker.review_count -= 1;
+    marker.review_avg_score = (marker.review_avg_score * marker.review_count - review.rating) / (marker.review_count);
     await this.reviewRepository.remove(review);
-    console.log('delete successful');
   }
 }

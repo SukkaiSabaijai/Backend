@@ -37,9 +37,9 @@ export class ReviewsController {
 
   // Delete /reviews/delete/:id
   @UseGuards(AccessTokenGuard)
-  @Delete('delete/:id')
-  async deleteReview(@Param('id') reviewId: number, @Req() req): Promise<void> {
+  @Delete('delete/:markerId/:id')
+  async deleteReview(@Param('id') reviewId: number, @Param('markerId') markerId: number, @Req() req): Promise<void> {
     const userId = req.user['sub'];
-    return await this.reviewsService.deleteReview(reviewId, userId);
+    return await this.reviewsService.deleteReview(reviewId, userId, markerId);
   }
 }

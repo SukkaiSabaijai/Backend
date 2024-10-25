@@ -1,5 +1,4 @@
 import { UsersModule } from './modules/users/users.module';
-import { User } from './modules/users/entities/user.entity';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -14,7 +13,6 @@ import { Review } from './modules/reviews/entities/review.entity';
 import { Bookmark } from './modules/bookmarks/entities/bookmark.entity';
 import { Grid } from './modules/markers/entities/grid.entity';
 import { MarkerPic } from './modules/markers/entities/marker_pics.entity';
-import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { MinioModule } from './modules/minio/minio.module';
 import { RestAreaCategory, ToiletCategory } from './modules/markers/entities/category.entity';

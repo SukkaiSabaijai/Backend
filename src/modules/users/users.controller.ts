@@ -6,38 +6,41 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Req,
   Put,
-  ValidationPipe,
-  UsePipes,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserDto } from './dto/requests/update-user.dto';
+import { User } from './entities/user.entity';
+import { AccessTokenGuard } from '../../common/accessToken.guard';
+import { GetUserDto } from './dto/response/get-user.dto';
+import { ChangePasswordDto } from './dto/requests/change-password.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
-@Controller('users')
+@Controller("user")
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {
 
-  @Post()
-  async create(@Body() createUserDto: CreateUserDto) {
-    return await this.usersService.create(createUserDto);
   }
 
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
+  @UseGuards(AccessTokenGuard)
+  @Patch()
+  @UseInterceptors(FileInterceptor('profile_pic'))
+  async update(@Req() req, @Body() updateUserDto: UpdateUserDto, @UploadedFile() file: Express.Multer.File): Promise<GetUserDto> {
+    const userId = req.user['sub']
+    return this.usersService.update(userId, updateUserDto, file);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
-  }
-
-  @Put(':id')
-  async update(
-    @Param('id') id: number,
-    @Body() updateUserDto: UpdateUserDto,
-  ) {
-    return this.usersService.update(+id, updateUserDto);
+  @UseGuards(AccessTokenGuard)
+  @Put('/change-password')
+  async changePassword(
+    @Req() req,
+    @Body() changePasswordDto: ChangePasswordDto
+  ): Promise<void> {
+    const userId = req.user['sub']
+    return this.usersService.changePassword(userId, changePasswordDto);
   }
 }

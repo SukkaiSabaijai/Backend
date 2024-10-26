@@ -15,6 +15,8 @@ export class MarkersController {
     @Post('create')
     async create_marker(@Req() req, @Body() createMarkerDTO: CreateMarkerDTO, @UploadedFiles() img: Express.Multer.File[]){
         //console.log(createMarkerDTO);
+        //console.log(img)
+        //console.log(req)
         
         const validCategoriesMap = {
             [MarkerType.REST_AREA]: [Category.CHARGER, Category.TABLE, Category.WIFI],

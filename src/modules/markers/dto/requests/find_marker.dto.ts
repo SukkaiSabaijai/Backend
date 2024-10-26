@@ -5,20 +5,20 @@ export class FindMarker {
     @IsString()
     type: string;
 
-    @IsInt()
-    @Transform(({ value }) => parseInt(value))
+    @IsNumber()
+    @Transform(({ value }) => parseFloat(value))
     max_latitude: number;
 
-    @IsInt()
-    @Transform(({ value }) => parseInt(value))
+    @IsNumber()
+    @Transform(({ value }) => parseFloat(value))
     min_latitude: number;
 
-    @IsInt()
-    @Transform(({ value }) => parseInt(value))
+    @IsNumber()
+    @Transform(({ value }) => parseFloat(value))
     max_longitude: number;
 
-    @IsInt()
-    @Transform(({ value }) => parseInt(value))
+    @IsNumber()
+    @Transform(({ value }) => parseFloat(value))
     min_longitude: number;
 
     @Transform(({ value }) => value === 'true')
@@ -46,12 +46,12 @@ export class FindMarker {
     wifi: boolean = false;
 
     @IsOptional()
-    @IsInt()
-    @Transform(({ value }) => parseInt(value))
+    @IsNumber()
+    @Transform(({ value }) => parseFloat(value))
     price: number;
 
     @IsOptional()
-    @IsInt()
-    @Transform(({ value }) => parseInt(value))
+    @IsNumber()
+    @Transform(({ value }) => parseFloat(value))
     rating: number;
 }

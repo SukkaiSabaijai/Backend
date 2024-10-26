@@ -25,16 +25,19 @@ export class MarkersService {
     ) {}
 
     async create_marker( user_id : number, createMarkerDTO : CreateMarkerDTO, img: Express.Multer.File[]) {
-        const exMarker = await this.markerRepository.findOneBy({
-            latitude: createMarkerDTO.latitude,
-            longitude: createMarkerDTO.longitude
-        });
-
-        if (exMarker) {
-            throw new BadRequestException('Marker already exist');
-        }
         if (createMarkerDTO.type !== 'toilet' && createMarkerDTO.type !== 'rest_area') {
             throw new BadRequestException('Type not match');
+        }
+
+        const markerInArea = new FindMarker;
+        markerInArea.type = createMarkerDTO.type;
+        markerInArea.max_latitude = createMarkerDTO.latitude + 0.0001;
+        markerInArea.min_latitude = createMarkerDTO.latitude - 0.0001;
+        markerInArea.max_longitude = createMarkerDTO.longitude + 0.0001;
+        markerInArea.min_longitude = createMarkerDTO.longitude - 0.0001;
+        const exMarker = await this.find_marker(markerInArea);
+        if (exMarker.length !== 0) {
+            throw new BadRequestException('Marker already exist');
         }
 
         //find user
@@ -83,10 +86,12 @@ export class MarkersService {
             newMarkerPic.path = path;
             markerPic.push(newMarkerPic);
         }
-        console.log(markerPic);
+        //console.log(markerPic);
 
         //create marker
-        const newMarker = new Marker()
+        const newMarker = this.markerRepository.create({
+            ...createMarkerDTO
+        })
         if (createMarkerDTO.type === 'toilet') {
             const newToiletCategory = new ToiletCategory();
             createMarkerDTO.category.forEach((categoryName) => {
@@ -100,9 +105,9 @@ export class MarkersService {
         } else if (createMarkerDTO.type === 'rest_area') {
             const newRestAreaCategory = new RestAreaCategory();
             createMarkerDTO.category.forEach((categoryName) => {
-                newRestAreaCategory.charger = categoryName === 'charger';
-                newRestAreaCategory.table = categoryName === 'table';
-                newRestAreaCategory.wifi = categoryName === 'wifi';
+                newRestAreaCategory.charger = newRestAreaCategory.charger || categoryName === 'charger';
+                newRestAreaCategory.table = newRestAreaCategory.table || categoryName === 'table';
+                newRestAreaCategory.wifi = newRestAreaCategory.wifi || categoryName === 'wifi';
             })
             
             newMarker.restAreaCategory = newRestAreaCategory;
@@ -110,15 +115,9 @@ export class MarkersService {
         }
         newMarker.created_by = user;
         newMarker.grid_id = grid;
-        newMarker.latitude = createMarkerDTO.latitude;
-        newMarker.longitude = createMarkerDTO.longitude;
-        newMarker.type = createMarkerDTO.type;
-        newMarker.location_name = createMarkerDTO.location_name;
-        newMarker.detail = createMarkerDTO.detail;
-        newMarker.price = createMarkerDTO.price;
         newMarker.marker_pics = Promise.resolve(markerPic)
 
-        const saveMarker = await this.markerRepository.save(newMarker);
+        await this.markerRepository.save(newMarker);
         grid.marker_count += 1;
         await this.gridRepository.save(grid);
         await this.userRepository.save(user);
@@ -164,8 +163,8 @@ export class MarkersService {
         const level = grid.level + 1;
         const min_lat = [grid.min_latitude, grid.min_latitude + lenght, grid.min_latitude, grid.min_latitude + lenght];
         const max_lat = [grid.max_latitude - lenght, grid.max_latitude, grid.max_latitude - lenght, grid.max_latitude];
-        const min_long = [grid.min_longitude, grid.min_longitude + lenght, grid.min_longitude, grid.min_longitude + lenght];
-        const max_long = [grid.max_longitude - lenght, grid.max_longitude, grid.max_longitude - lenght, grid.max_longitude];
+        const min_long = [grid.min_longitude, grid.min_longitude, grid.min_longitude + lenght, grid.min_longitude + lenght];
+        const max_long = [grid.max_longitude - lenght, grid.max_longitude - lenght, grid.max_longitude, grid.max_longitude];
 
         let grids = [];
         for(let i = 0; i < 4; i++){
@@ -246,6 +245,7 @@ export class MarkersService {
                         grid.min_longitude <= findMarker.max_longitude &&
                         grid.max_longitude >= findMarker.min_longitude
                     ) {
+                        //console.log(grid);
                         grids.push(grid);
                     }
                 }
@@ -259,11 +259,18 @@ export class MarkersService {
         for (let i = 0; i < returnGrids.length; i++){
             returnMarkers = returnMarkers.concat(await returnGrids[i].markers);
         }
-        console.log(returnMarkers);
+        //console.log(returnMarkers);
         
         //filter
         let filterMarkers: ReturnMarker[] = [];
         for (let i = 0; i < returnMarkers.length; i++){
+            if (returnMarkers[i].latitude < findMarker.min_latitude || 
+                returnMarkers[i].latitude > findMarker.max_latitude ||
+                returnMarkers[i].longitude < findMarker.min_longitude ||
+                returnMarkers[i].longitude > findMarker.max_longitude
+            ) {
+                continue;
+            }
             if (findMarker.price !== undefined) {
                 if (returnMarkers[i].price > findMarker.price){
                     continue;

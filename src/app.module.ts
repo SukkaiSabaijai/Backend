@@ -16,6 +16,7 @@ import { MarkerPic } from './modules/markers/entities/marker_pics.entity';
 import { AuthModule } from './modules/auth/auth.module';
 import { MinioModule } from './modules/minio/minio.module';
 import { RestAreaCategory, ToiletCategory } from './modules/markers/entities/category.entity';
+import { HistoriesModule } from './modules/histories/histories.module';
 
 @Module({
 	imports: [
@@ -36,6 +37,7 @@ import { RestAreaCategory, ToiletCategory } from './modules/markers/entities/cat
 		ReviewsModule,
 		BookmarksModule,
 		MinioModule,
+		HistoriesModule
 	],
 	controllers: [AppController],
 	providers: [AppService],

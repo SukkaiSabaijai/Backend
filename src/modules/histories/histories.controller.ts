@@ -7,14 +7,14 @@ export class HistoriesController {
   constructor(private readonly historiesService: HistoriesService) { }
 
   @UseGuards(AccessTokenGuard)
-  @Get()
+  @Get("markers")
   markers(@Req() req) {
     const userId = req.user['sub']
     return this.historiesService.findAllMarkers(userId);
   }
 
   @UseGuards(AccessTokenGuard)
-  @Get()
+  @Get("reviews")
   reviews(@Req() req) {
     const userId = req.user['sub']
     return this.historiesService.findAllReviews(userId);

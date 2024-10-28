@@ -267,7 +267,8 @@ export class MarkersService {
             if (returnMarkers[i].latitude < findMarker.min_latitude || 
                 returnMarkers[i].latitude > findMarker.max_latitude ||
                 returnMarkers[i].longitude < findMarker.min_longitude ||
-                returnMarkers[i].longitude > findMarker.max_longitude
+                returnMarkers[i].longitude > findMarker.max_longitude ||
+                returnMarkers[i].type !== findMarker.type
             ) {
                 continue;
             }

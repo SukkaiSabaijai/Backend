@@ -3,7 +3,7 @@ import { IsEnum, IsNumber, IsOptional, IsString } from "class-validator"
 
 export enum MarkerType {
     TOILET = 'toilet',
-    REST_AREA = 'reat_area'
+    REST_AREA = 'rest_area'
 }
 
 export enum Category {

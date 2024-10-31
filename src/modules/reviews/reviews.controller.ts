@@ -8,6 +8,7 @@ import {
   Req,
   Delete,
   NotFoundException,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
 import { Review } from './entities/review.entity';
@@ -17,10 +18,11 @@ import { GetReviewDTO } from './dto/getReviewResponse.dto';
 
 @Controller('reviews')
 export class ReviewsController {
-	constructor(private readonly reviewsService: ReviewsService) {}
+  constructor(private readonly reviewsService: ReviewsService) { }
 
   // Post /review/create
   @UseGuards(AccessTokenGuard)
+  @UseInterceptors()
   @Post('create')
   async createReview(
     @Req() req,

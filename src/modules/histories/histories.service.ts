@@ -35,7 +35,8 @@ export class HistoriesService {
       createdAt: review.createdAt,
       rating: review.rating,
       review: review.review,
-      markerId: review.marker.id
+      markerId: review.marker.id,
+      locationName: review.marker.location_name
     })
     return returnReview;
   }

@@ -115,7 +115,7 @@ export class MarkersService {
         }
         newMarker.created_by = user;
         newMarker.grid_id = grid;
-        newMarker.marker_pics = Promise.resolve(markerPic)
+        newMarker.marker_pics = markerPic;
 
         await this.markerRepository.save(newMarker);
         grid.marker_count += 1;
@@ -335,13 +335,17 @@ export class MarkersService {
             if (marker.restAreaCategory.wifi){category.push("wifi");}
             if (marker.restAreaCategory.table){category.push("table");}
         }
-        const marker_pic = await marker.marker_pics;
+        const marker_pic = marker.marker_pics;
+        //console.log(marker_pic);
         let img_path: string[] = [];
-        marker_pic.forEach((img) => {
-            img_path.push(img.path);
-        })
+        if (marker_pic){
+            marker_pic.forEach((img) => {
+                img_path.push(img.path);
+            })
+        }
 
         const newMarkerDetail = new MarkerDetail();
+        newMarkerDetail.id = marker.id;
         newMarkerDetail.created_by = marker.created_by.username;
         newMarkerDetail.latitude =  marker.latitude;
         newMarkerDetail.longitude = marker.longitude;

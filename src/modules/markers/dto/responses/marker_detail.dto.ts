@@ -1,4 +1,5 @@
 export class MarkerDetail{
+    id: number;
     created_by: string;
     latitude: number;
     longitude: number;

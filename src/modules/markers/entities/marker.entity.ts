@@ -49,8 +49,8 @@ export class Marker {
     @JoinColumn()
     restAreaCategory: RestAreaCategory
 
-	@OneToMany(() => MarkerPic, (marker_pic) => marker_pic.marker, {cascade: true})
-	marker_pics: Promise<MarkerPic[]>;
+	@OneToMany(() => MarkerPic, (marker_pic) => marker_pic.marker, {cascade: true, eager: true})
+	marker_pics: MarkerPic[];
 
 	@OneToMany(() => Review, (review) => review.marker, {cascade: true})
 	reviews: Promise<Review[]>;

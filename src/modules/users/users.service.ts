@@ -33,6 +33,11 @@ export class UsersService {
     return user;
   }
 
+  async get(id: number): Promise<GetUserDto> {
+    const user = await this.usersRepository.findOne({ where: { id } });
+    return plainToInstance(GetUserDto, user, { excludeExtraneousValues: true });;
+  }
+
   async create(createUserDto: CreateUserDto, file: Express.Multer.File, password: string): Promise<User> {
     const user_pic = file ? await this.minioService.uploadFile(file, 'user-pics') : undefined;
 

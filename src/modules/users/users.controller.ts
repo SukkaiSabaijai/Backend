@@ -23,7 +23,13 @@ import { FileInterceptor } from '@nestjs/platform-express';
 @Controller("user")
 export class UsersController {
   constructor(private readonly usersService: UsersService) {
+  }
 
+  @UseGuards(AccessTokenGuard)
+  @Get()
+  async get(@Req() req): Promise<GetUserDto> {
+    const userId = req.user['sub']
+    return this.usersService.get(userId);
   }
 
   @UseGuards(AccessTokenGuard)

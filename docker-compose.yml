@@ -3,45 +3,44 @@ services:
   postgres:
     image: postgres:13
     container_name: postgres_db
-    ports:
-      - '5432:5432'
     environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DATABASE}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DATABASE}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    restart: always
 
   minio:
     image: minio/minio:latest
     container_name: minio
     environment:
-      - MINIO_ROOT_USER=${MINIO_USER}
-      - MINIO_ROOT_PASSWORD=${MINIO_PASSWORD}
-    ports:
-      - "9000:9000"
-      - "9001:9001" # MinIO Console
+      MINIO_ROOT_USER: ${MINIO_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD}
     volumes:
       - minio_data:/data
+    ports:
+      - "9001:9001"
     command: server /data --console-address ":9001"
     restart: always
 
-  nestjs:
+  app:
     build:
-      context: . # Update with the correct path to your NestJS project
-      dockerfile: Dockerfile # Specify your Dockerfile if named differently
-    container_name: nestjs_app
+      context: .
+      dockerfile: Dockerfile
+    container_name: app_service
     ports:
-      - "3000:3000" # Adjust the port if necessary
+      - "5000:5000"
     env_file: .env
     depends_on:
       - postgres
+      - minio
     restart: always
 
 volumes:
   postgres_data:
     labels:
-      - "keep=yes"  # Label to mark the volume for retention
+      - "keep=yes"
   minio_data:
     labels:
-      - "keep=yes"  # Label to mark the volume for retention
+      - "keep=yes"

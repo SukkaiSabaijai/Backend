@@ -1,3 +1,4 @@
+import { UsersModule } from './modules/users/users.module';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -12,10 +13,10 @@ import { Review } from './modules/reviews/entities/review.entity';
 import { Bookmark } from './modules/bookmarks/entities/bookmark.entity';
 import { Grid } from './modules/markers/entities/grid.entity';
 import { MarkerPic } from './modules/markers/entities/marker_pics.entity';
-import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { MinioModule } from './modules/minio/minio.module';
 import { RestAreaCategory, ToiletCategory } from './modules/markers/entities/category.entity';
+import { HistoriesModule } from './modules/histories/histories.module';
 
 @Module({
 	imports: [
@@ -36,8 +37,9 @@ import { RestAreaCategory, ToiletCategory } from './modules/markers/entities/cat
 		ReviewsModule,
 		BookmarksModule,
 		MinioModule,
+		HistoriesModule
 	],
 	controllers: [AppController],
 	providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

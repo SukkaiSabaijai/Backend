@@ -2,18 +2,12 @@
 import {
 	Controller,
 	Get,
-	Post,
 	Param,
-	Delete,
-	UploadedFile,
-	UseInterceptors,
-	HttpException,
-	HttpStatus,
+	Res,
+	NotFoundException,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { MinioService } from './modules/minio/minio.service';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { v4 as uuidv4 } from 'uuid';
-import * as path from 'path';
 
 @Controller()
 export class AppController {
@@ -24,12 +18,19 @@ export class AppController {
 	}
 
 	@Get('image/:folderName/:fileName')
-	async getImage(@Param('folderName') folderName: string, @Param('fileName') fileName: string): Promise<string> {
-		const objectName = `${folderName}/${fileName}`;
-		if (folderName !== 'marker-pics') {
-			throw new HttpException('access denied', HttpStatus.FORBIDDEN);
+	async getImage(
+		@Param('folderName') folderName: string,
+		@Param('fileName') fileName: string,
+		@Res() res: Response
+	): Promise<void> {
+		const filePath = `${folderName}/${fileName}`;
+		try {
+			const fileStream = await this.minioService.getFileStream(filePath);
+			res.setHeader('Content-Type', 'image/jpeg');
+			res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
+			fileStream.pipe(res);
+		} catch {
+			throw new NotFoundException('Image not found');
 		}
-		const url = await this.minioService.getFileUrl(objectName);
-		return url
 	}
 }

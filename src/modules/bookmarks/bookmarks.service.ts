@@ -7,7 +7,7 @@ import { Marker } from '../markers/entities/marker.entity';
 import { CreateBookmarkDto } from './dto/create-bookmark-dto';
 import { ForbiddenException } from '@nestjs/common';
 import { UpdateBookmarkDto } from './dto/update-bookmark-dto';
-
+import { CreateBookmarkResponse } from './dto/responses/response-create-bookmark-dto';
 @Injectable()
 export class BookmarksService {
   constructor(
@@ -22,7 +22,7 @@ export class BookmarksService {
   async createBookmark(
     user_id: number,
     createBookmarkDto: CreateBookmarkDto,
-  ): Promise<Bookmark> {
+  ): Promise<CreateBookmarkResponse> {
     const { markerId, nickname } = createBookmarkDto;
     const marker = await this.markerRepository.findOne({
       where: { id: markerId },
@@ -48,8 +48,9 @@ export class BookmarksService {
       marker: marker,
       short_name: nickname,
     });
-
-    return await this.bookmarkRepository.save(newBookmark);
+    const returnBookmark = await this.bookmarkRepository.save(newBookmark);
+    const responseBookmark = new CreateBookmarkResponse(returnBookmark.id,returnBookmark.marker, returnBookmark.short_name);
+    return responseBookmark;    
   }
 
   async deleteBookmark(bookmarkId: number, userId: number): Promise<void> {

@@ -70,9 +70,9 @@ export class AuthService {
     );
 
     if (!refreshTokenMatch) throw new ForbiddenException('access Denied');
-    const tokens = await this.getTokens(user.id, user.username);
-    await this.updateRefreshToken(user.id, tokens.refreshToken);
-    return tokens;
+    const { accessToken } = await this.getTokens(user.id, user.username);
+    // await this.updateRefreshToken(user.id, tokens.refreshToken);
+    return { accessToken };
   }
 
   async logout(userId: number) {

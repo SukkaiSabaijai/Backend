@@ -11,6 +11,7 @@ import { FindMarker } from './dto/requests/find_marker.dto';
 import { ReturnMarker } from './dto/responses/return_marker.dto';
 import { MarkerDetail } from './dto/responses/marker_detail.dto';
 import { MinioService } from '../minio/minio.service';
+import { Bookmark } from '../bookmarks/entities/bookmark.entity';
 
 @Injectable()
 export class MarkersService {
@@ -21,6 +22,7 @@ export class MarkersService {
         @InjectRepository(Grid) private gridRepository: Repository<Grid>,
         @InjectRepository(RestAreaCategory) private restareacategoryRepository: Repository<RestAreaCategory>,
         @InjectRepository(ToiletCategory) private tolietcategoryRepository: Repository<ToiletCategory>,
+        @InjectRepository(Bookmark)private bookmarkRepository: Repository<Bookmark>,
         private minioService:MinioService
     ) {}
 
@@ -317,7 +319,7 @@ export class MarkersService {
         return (inp === false && filter === true);
     }
 
-    async get_marker_detail(marker_id:number): Promise<MarkerDetail> {
+    async get_marker_detail(marker_id:number, user_id:number): Promise<MarkerDetail> {
         console.log(marker_id)
         const marker = await this.markerRepository.findOne({
             where: { id: marker_id }
@@ -325,6 +327,7 @@ export class MarkersService {
         if (!marker) {
             throw new BadRequestException('Marker not exist');
         }
+
         let category = [];
         if (marker.type === "toilet") {
             if (marker.toiletCategory.disable){category.push("disable");}
@@ -335,15 +338,15 @@ export class MarkersService {
             if (marker.restAreaCategory.wifi){category.push("wifi");}
             if (marker.restAreaCategory.table){category.push("table");}
         }
+
         const marker_pic = marker.marker_pics;
-        //console.log(marker_pic);
         let img_path: string[] = [];
         if (marker_pic){
             marker_pic.forEach((img) => {
                 img_path.push(img.path);
             })
         }
-
+        
         const newMarkerDetail = new MarkerDetail();
         newMarkerDetail.id = marker.id;
         newMarkerDetail.created_by = marker.created_by.username;
@@ -356,7 +359,18 @@ export class MarkersService {
         newMarkerDetail.category = category;
         newMarkerDetail.img = img_path;
         newMarkerDetail.price = marker.price;
-
+        newMarkerDetail.isBookMark = false;
+        if (user_id){
+            const bookmark = await this.bookmarkRepository.findOne({
+                where: { marker: {id: marker_id},
+                         user: {id: user_id}
+                 }
+            })
+            if (bookmark){
+                newMarkerDetail.isBookMark = true;
+            }
+        }
+        
         return newMarkerDetail
     }
 

@@ -1,5 +1,6 @@
 export class MarkerDetail{
     id: number;
+    isBookMark: boolean;
     created_by: string;
     latitude: number;
     longitude: number;

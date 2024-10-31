@@ -38,6 +38,16 @@ export class ReviewsService {
       return { status: false };
     }
     const user = await this.userRepository.findOne({ where: { id: user_id } });
+
+    const reviewExist = await this.reviewRepository.findOne({
+            where: {user: {id: user_id},
+                    marker: {id: markerId}
+                  }
+    })
+
+    if (reviewExist){
+      return { status: false };
+    }
     
     const newReview = this.reviewRepository.create({
       user: user,

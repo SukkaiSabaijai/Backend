@@ -14,6 +14,7 @@ import { AccessTokenGuard } from 'src/common/accessToken.guard';
 import { CreateBookmarkDto } from './dto/create-bookmark-dto';
 import { Bookmark } from './entities/bookmark.entity';
 import { UpdateBookmarkDto } from './dto/update-bookmark-dto';
+import { CreateBookmarkResponse } from './dto/responses/response-create-bookmark-dto';
 
 @Controller('bookmarks')
 export class BookmarksController {
@@ -24,7 +25,7 @@ export class BookmarksController {
   async createBookmark(
     @Req() req,
     @Body() createBookmarksDto: CreateBookmarkDto,
-  ): Promise<Bookmark> {
+  ): Promise<CreateBookmarkResponse> {
     const userId = await req.user['sub'];
     return this.bookmarksService.createBookmark(userId, createBookmarksDto);
   }

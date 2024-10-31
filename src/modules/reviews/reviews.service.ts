@@ -47,7 +47,7 @@ export class ReviewsService {
     });
     marker.review_count += 1;
     marker.review_total_score += newReview.rating;
-  
+    await this.markerRepository.save(marker);
     await this.reviewRepository.save(newReview);
   
     return { status: true };
@@ -100,6 +100,7 @@ export class ReviewsService {
     }
     marker.review_count -= 1;
     marker.review_total_score -= review.rating
+    await this.markerRepository.save(marker);
     await this.reviewRepository.remove(review);
   }
 }

@@ -40,7 +40,9 @@ export class BookmarksService {
     const existMarker = await this.bookmarkRepository.findOne({where: {marker: marker, user: user}});
 
     if (existMarker) {
-      throw new ForbiddenException('This bookmark already exists');
+      await this.bookmarkRepository.remove(existMarker);
+      console.log('Bookmark already removed');
+      return
     }
 
     const newBookmark = this.bookmarkRepository.create({
@@ -53,20 +55,20 @@ export class BookmarksService {
     return responseBookmark;    
   }
 
-  async deleteBookmark(bookmarkId: number, userId: number): Promise<void> {
-    const bookmark = await this.bookmarkRepository.findOne({
-      where: { id: bookmarkId },
-      relations: ['user'],
-    });
-    if (!bookmark) {
-      throw new NotFoundException(`Bookmark with ID ${bookmarkId} not found`);
-    }
-    if (bookmark.user.id !== userId) {
-      throw new ForbiddenException('You are not allowed to delete this bookmark');
-    }
+  // async deleteBookmark(bookmarkId: number, userId: number): Promise<void> {
+  //   const bookmark = await this.bookmarkRepository.findOne({
+  //     where: { id: bookmarkId },
+  //     relations: ['user'],
+  //   });
+  //   if (!bookmark) {
+  //     throw new NotFoundException(`Bookmark with ID ${bookmarkId} not found`);
+  //   }
+  //   if (bookmark.user.id !== userId) {
+  //     throw new ForbiddenException('You are not allowed to delete this bookmark');
+  //   }
   
-    await this.bookmarkRepository.remove(bookmark);
-  }
+  //   await this.bookmarkRepository.remove(bookmark);
+  // }
 
   async getBookmark(userId: number): Promise<Bookmark[]> {
     return await this.bookmarkRepository.find({

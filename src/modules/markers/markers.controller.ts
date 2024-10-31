@@ -54,15 +54,7 @@ export class MarkersController {
     @UsePipes(new ValidationPipe({ transform: true }))
     async show_detail(@Req() req, @Param('id', ParseIntPipe) marker_id: number): Promise<MarkerDetail> {
         const userId = req.user?.sub; // Assuming `sub` is userId in your JWT payload
-
-        if (userId) {
-            console.log(`User ID: ${userId}`);
-        } else {
-            console.log('No user ID available');
-        }
-
-
-        return await this.markersService.get_marker_detail(marker_id);
+        return await this.markersService.get_marker_detail(marker_id, userId);
     }
 
     @UseGuards(AccessTokenGuard)

@@ -4,4 +4,5 @@ export class GetReviewHistory{
     rating: number;
     review: string;
     markerId: number
+    locationName: string
 }

@@ -30,15 +30,15 @@ export class BookmarksController {
     return this.bookmarksService.createBookmark(userId, createBookmarksDto);
   }
 
-  @UseGuards(AccessTokenGuard)
-  @Delete('/:id')
-  async deleteBookmark(
-    @Req() req,
-    @Param('id') bookmarkId: number,
-  ): Promise<void> {
-    const userId = req.user['sub'];
-    return await this.bookmarksService.deleteBookmark(bookmarkId, userId);
-  }
+  // @UseGuards(AccessTokenGuard)
+  // @Delete('/:id')
+  // async deleteBookmark(
+  //   @Req() req,
+  //   @Param('id') bookmarkId: number,
+  // ): Promise<void> {
+  //   const userId = req.user['sub'];
+  //   return await this.bookmarksService.deleteBookmark(bookmarkId, userId);
+  // }
 
   @UseGuards(AccessTokenGuard)
   @Get()

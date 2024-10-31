@@ -15,6 +15,7 @@ import { Review } from './entities/review.entity';
 import { AccessTokenGuard } from 'src/common/accessToken.guard';
 import { CreateReviewsDto } from './dto/create-review.dto';
 import { GetReviewDTO } from './dto/getReviewResponse.dto';
+import { FilesInterceptor } from '@nestjs/platform-express';
 
 @Controller('reviews')
 export class ReviewsController {
@@ -22,7 +23,6 @@ export class ReviewsController {
 
   // Post /review/create
   @UseGuards(AccessTokenGuard)
-  @UseInterceptors()
   @Post('create')
   async createReview(
     @Req() req,

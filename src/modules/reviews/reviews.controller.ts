@@ -7,11 +7,13 @@ import {
   UseGuards,
   Req,
   Delete,
+  NotFoundException,
 } from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
 import { Review } from './entities/review.entity';
 import { AccessTokenGuard } from 'src/common/accessToken.guard';
 import { CreateReviewsDto } from './dto/create-review.dto';
+import { GetReviewDTO } from './dto/getReviewResponse.dto';
 
 @Controller('reviews')
 export class ReviewsController {
@@ -21,18 +23,22 @@ export class ReviewsController {
   @UseGuards(AccessTokenGuard)
   @Post('create')
   async createReview(
-    @Req() req,
-    @Body() createReviewsDto: CreateReviewsDto,
-  ): Promise<Review> {
-    const userId = await req.user['sub'];
-    return this.reviewsService.createReview(userId, createReviewsDto);
+    @Param('userId') userId: number,
+    @Body() createReviewDto: CreateReviewsDto,
+  ) {
+    const result = await this.reviewsService.createReview(userId, createReviewDto);
+    return result;
   }
 
   @Get('marker/:markerId/reviews')
   async getReviewsForMarker(
-    @Param('markerId') markerId: number,
-  ): Promise<Review[]> {
-    return this.reviewsService.getReviewsByMarkerId(markerId);
+    @Param('markerId') markerId: string,
+  ): Promise<GetReviewDTO> {
+    const id = parseInt(markerId, 10);
+    if (isNaN(id)) {
+      throw new NotFoundException('Invalid marker ID');
+    }
+    return await this.reviewsService.getReviewsByMarkerId(id);
   }
 
   // Delete /reviews/delete/:id

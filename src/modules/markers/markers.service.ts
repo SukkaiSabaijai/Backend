@@ -355,6 +355,7 @@ export class MarkersService {
         newMarkerDetail.avg_rating = marker.review_count > 0? marker.review_total_score/marker.review_count : 0;
         newMarkerDetail.category = category;
         newMarkerDetail.img = img_path;
+        newMarkerDetail.price = marker.price;
 
         return newMarkerDetail
     }

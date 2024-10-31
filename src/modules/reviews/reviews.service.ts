@@ -14,6 +14,7 @@ import { AccessTokenGuard } from 'src/common/accessToken.guard';
 import { Request } from '@nestjs/common';
 import { CreateReviewsDto } from './dto/create-review.dto';
 import { CreateUserDto } from '../users/dto/requests/create-user.dto';
+import { GetReviewDTO, ReturnReview } from './dto/getReviewResponse.dto';
 @Injectable()
 export class ReviewsService {
   constructor(
@@ -28,36 +29,58 @@ export class ReviewsService {
   async createReview(
     user_id: number,
     createReviewDto: CreateReviewsDto,
-  ): Promise<Review> {
+  ): Promise<{ status: boolean }> {
     const { markerId, rating, review } = createReviewDto;
     const marker = await this.markerRepository.findOne({
       where: { id: markerId },
     });
     if (!marker) {
-      throw new NotFoundException('Marker not found');
+      return { status: false };
     }
     const user = await this.userRepository.findOne({ where: { id: user_id } });
+    
     const newReview = this.reviewRepository.create({
       user: user,
       marker: marker,
       rating: rating,
-      review: review ?? null,
+      review: review ?? '',
     });
     marker.review_count += 1;
-    marker.review_total_score += newReview.rating
-    return await this.reviewRepository.save(newReview);
+    marker.review_total_score += newReview.rating;
+    await this.markerRepository.save(marker);
+    await this.reviewRepository.save(newReview);
+  
+    return { status: true };
   }
 
-  async getReviewsByMarkerId(markerId: number): Promise<Review[]> {
+
+  async getReviewsByMarkerId(markerId: number): Promise<GetReviewDTO> {
     const marker = await this.markerRepository.findOne({
       where: { id: markerId },
+      relations: ['reviews', 'reviews.user'],
     });
+  
     if (!marker) {
       throw new NotFoundException('Marker not found');
     }
-    const reviews = await marker.reviews;
-
-    return reviews;
+  
+    const reviews = await marker.reviews; 
+    const reviewDetails = reviews.map(review => <ReturnReview>{
+      username: review.user.username,
+      userPic: review.user.user_pic,
+      rating: review.rating,
+      review: review.review
+    });
+  
+    const reviewCount = marker.review_count;
+    const score = reviewCount > 0? marker.review_total_score / reviewCount:0;
+    const reviewResponse = new GetReviewDTO;
+    reviewResponse.markerId = marker.id;
+    reviewResponse.avgRating = score;
+    reviewResponse.reviewCount = reviewCount;
+    reviewResponse.reviews = reviewDetails
+  
+    return reviewResponse;
   }
 
   async deleteReview(reviewId: number, userId: number, markerId: number): Promise<void> {
@@ -77,6 +100,7 @@ export class ReviewsService {
     }
     marker.review_count -= 1;
     marker.review_total_score -= review.rating
+    await this.markerRepository.save(marker);
     await this.reviewRepository.remove(review);
   }
 }

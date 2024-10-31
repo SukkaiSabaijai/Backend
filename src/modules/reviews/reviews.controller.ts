@@ -23,10 +23,11 @@ export class ReviewsController {
   @UseGuards(AccessTokenGuard)
   @Post('create')
   async createReview(
-    @Param('userId') userId: number,
+    @Req() req,
     @Body() createReviewDto: CreateReviewsDto,
   ) {
-    const result = await this.reviewsService.createReview(userId, createReviewDto);
+    console.log(createReviewDto)
+    const result = await this.reviewsService.createReview(req.user['sub'], createReviewDto);
     return result;
   }
 

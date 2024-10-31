@@ -1,5 +1,5 @@
-import { Transform } from "class-transformer";
-import { IsBoolean, IsInt, IsNumber, IsOptional, IsString } from "class-validator";
+import { Transform, Type } from "class-transformer";
+import { IsBoolean, IsInt, IsNumber, IsOptional, isString, IsString } from "class-validator";
 
 export class FindMarker {
     @IsString()
@@ -21,27 +21,27 @@ export class FindMarker {
     @Transform(({ value }) => parseFloat(value))
     min_longitude: number;
 
-    @Transform(({ value }) => value === 'true')
+    @Type(() => Boolean)
     @IsBoolean()
     disable: boolean = false;
 
-    @Transform(({ value }) => value === 'true')
+    @Type(() => Boolean)
     @IsBoolean()
     hose: boolean = false;
 
-    @Transform(({ value }) => value === 'true')
+    @Type(() => Boolean)
     @IsBoolean()
     flush: boolean = false;
 
-    @Transform(({ value }) => value === 'true')
+    @Type(() => Boolean)
     @IsBoolean()
     table: boolean = false;
 
-    @Transform(({ value }) => value === 'true')
+    @Type(() => Boolean)
     @IsBoolean()
     charger: boolean = false;
 
-    @Transform(({ value }) => value === 'true')
+    @Type(() => Boolean)
     @IsBoolean()
     wifi: boolean = false;
 

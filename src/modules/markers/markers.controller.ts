@@ -36,6 +36,7 @@ export class MarkersController {
     @Get()
     @UsePipes(new ValidationPipe({ transform: true }))
     async find(@Query() query: FindMarker) {
+        //console.log(query)
         if (query.type === "toilet") {
             if (query.charger || query.wifi || query.table) {
                 throw new BadRequestException('Filter mismatch');
@@ -49,6 +50,7 @@ export class MarkersController {
         }
         return await this.markersService.find_marker(query);
     }
+
     @UseGuards(OptionalAuthGuard)
     @Get(':id')
     @UsePipes(new ValidationPipe({ transform: true }))

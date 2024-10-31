@@ -286,6 +286,7 @@ export class MarkersService {
                 }
             }
             if (findMarker.type === "toilet"){
+                //console.log(findMarker.disable)
                 if (
                     await this.filter_condition(returnMarkers[i].toiletCategory.disable,findMarker.disable) ||
                     await this.filter_condition(returnMarkers[i].toiletCategory.flush,findMarker.flush) ||

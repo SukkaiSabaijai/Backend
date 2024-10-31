@@ -45,7 +45,6 @@ export class ReviewsService {
       rating: rating,
       review: review ?? '',
     });
-    
     marker.review_count += 1;
     marker.review_total_score += newReview.rating;
   

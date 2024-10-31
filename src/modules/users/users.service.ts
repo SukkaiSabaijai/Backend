@@ -92,7 +92,7 @@ export class UsersService {
       throw new BadRequestException('Old password is incorrect');
     }
 
-    user.password = await argon2.hash(user.password);
+    user.password = await argon2.hash(new_password);
     await this.usersRepository.save(user);
   }
 

@@ -5,19 +5,20 @@ import { AccessTokenGuard } from 'src/common/accessToken.guard';
 import { FindMarker } from './dto/requests/find_marker.dto';
 import { MarkerDetail } from './dto/responses/marker_detail.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { OptionalAuthGuard } from '../auth/strategies/optionalToken.strategy';
 
 @Controller('markers')
 export class MarkersController {
-    constructor(private readonly markersService: MarkersService){}
-    
+    constructor(private readonly markersService: MarkersService) { }
+
     @UseGuards(AccessTokenGuard)
-    @UseInterceptors(FilesInterceptor('img',5))
+    @UseInterceptors(FilesInterceptor('img', 5))
     @Post('create')
-    async create_marker(@Req() req, @Body() createMarkerDTO: CreateMarkerDTO, @UploadedFiles() img: Express.Multer.File[]){
+    async create_marker(@Req() req, @Body() createMarkerDTO: CreateMarkerDTO, @UploadedFiles() img: Express.Multer.File[]) {
         //console.log(createMarkerDTO);
         //console.log(img)
         //console.log(req)
-        
+
         const validCategoriesMap = {
             [MarkerType.REST_AREA]: [Category.CHARGER, Category.TABLE, Category.WIFI],
             [MarkerType.TOILET]: [Category.DISABLE, Category.FLUSH, Category.HOSE],
@@ -25,22 +26,22 @@ export class MarkersController {
 
         const validCategories = validCategoriesMap[createMarkerDTO.type];
         const isValidCategory = createMarkerDTO.category.every(categoryName => validCategories.includes(categoryName));
-        if (!isValidCategory){
+        if (!isValidCategory) {
             throw new BadRequestException('Filter mismatch');
         }
 
-        return this.markersService.create_marker(req.user['sub'],createMarkerDTO,img);
+        return this.markersService.create_marker(req.user['sub'], createMarkerDTO, img);
     }
 
     @Get()
     @UsePipes(new ValidationPipe({ transform: true }))
-    async find(@Query() query: FindMarker){
-        if (query.type === "toilet"){
-            if (query.charger|| query.wifi || query.table){
+    async find(@Query() query: FindMarker) {
+        if (query.type === "toilet") {
+            if (query.charger || query.wifi || query.table) {
                 throw new BadRequestException('Filter mismatch');
             }
-        } else if (query.type === "rest_area"){
-            if (query.disable || query.flush || query.hose){
+        } else if (query.type === "rest_area") {
+            if (query.disable || query.flush || query.hose) {
                 throw new BadRequestException('Filter mismatch');
             }
         } else {
@@ -48,17 +49,26 @@ export class MarkersController {
         }
         return await this.markersService.find_marker(query);
     }
-
+    @UseGuards(OptionalAuthGuard)
     @Get(':id')
     @UsePipes(new ValidationPipe({ transform: true }))
-    async show_detail (@Param('id', ParseIntPipe) marker_id: number): Promise<MarkerDetail> {
+    async show_detail(@Req() req, @Param('id', ParseIntPipe) marker_id: number): Promise<MarkerDetail> {
+        const userId = req.user?.sub; // Assuming `sub` is userId in your JWT payload
+
+        if (userId) {
+            console.log(`User ID: ${userId}`);
+        } else {
+            console.log('No user ID available');
+        }
+
+
         return await this.markersService.get_marker_detail(marker_id);
     }
 
     @UseGuards(AccessTokenGuard)
     @Delete(':id')
-    async delete_marker(@Param('id') marker_id:number, @Req() req){
+    async delete_marker(@Param('id') marker_id: number, @Req() req) {
         const user_id = req.user['sub'];
-        return await this.markersService.delete_marker(marker_id,user_id)
+        return await this.markersService.delete_marker(marker_id, user_id)
     }
 }
